@@ -1,6 +1,5 @@
 import numpy as np
 from requests import get
-from bs4 import BeautifulSoup
 from xml.dom import minidom
 import string
 
