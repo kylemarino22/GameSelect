@@ -23,11 +23,16 @@ class User:
 		return s
 
 class Game:
-	def __init__(self, name, bggRating, bggComplexity, length):
+	def __init__(self, name, average, bayesaverage, averageweight,
+			minplaytime, maxplaytime, minplayers, maxplayers):
 		self.name = name
-		self.bggRating = bggRating
-		self.bggComplexity = bggComplexity
-		self.length = length
+		self.average = average
+		self.bayesaverage = bayesaverage
+		self.averageweight = minplaytime
+		self.minplaytime = minplaytime
+		self.maxplaytime = maxplaytime
+		self.minplayers = minplayers
+		self.maxplayers = maxplayers
 
 	def getGame(self):
 		return self
@@ -76,7 +81,6 @@ def getStats (name):
 	printable = set(string.printable)
 	text = filter(lambda x: x in string.printable, text)
 
-
 	xml = minidom.parseString(text)
 
 	average = xmlHandler(xml, 'average')
@@ -87,13 +91,8 @@ def getStats (name):
 	minplayers = xmlHandler(xml, 'minplayers')
 	maxplayers = xmlHandler(xml, 'maxplayers')
 
-	return {'average'  : float(average), 
-		'bayesaverage' : float(bayesaverage),
-		'averageweight': float(averageweight), 
-		'minplaytime'  : int(minplaytime),
-		'maxplaytime'  : int(maxplaytime), 
-		'minplayers'   : int(minplayers), 
-		'maxplayers'   : int(maxplayers)}
+	return Game(name, float(average), float(bayesaverage), float(averageweight),
+		int(minplaytime), int(maxplaytime), int(minplayers), int(maxplayers))
 
 def xmlHandler(xml, tag):
 	return xml.getElementsByTagName(tag)[0].firstChild.nodeValue
