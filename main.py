@@ -28,7 +28,7 @@ class Game:
 		self.name = name
 		self.average = average
 		self.bayesaverage = bayesaverage
-		self.averageweight = minplaytime
+		self.averageweight = averageweight
 		self.minplaytime = minplaytime
 		self.maxplaytime = maxplaytime
 		self.minplayers = minplayers
@@ -38,11 +38,19 @@ class Game:
 		return self
 
 	def __repr__(self):
-		return "\nName: " + self.name + "\nbggRating: " + str(self.bggRating) + "\nggComplexity: " + str(self.bggComplexity) + "\nlength: " + str(self.length)
+		return ("\nName: " + self.name +
+			"\naverage: " + str(self.average) +
+			"\nbayesaverage: " + str(self.bayesaverage) +
+			"\naverageweight: " + str(self.averageweight) +
+			"\nminplaytime: " + str(self.minplaytime) +
+			"\nmaxplaytime: " + str(self.maxplaytime) +
+			"\nminplayers: " + str(self.minplayers) +
+			"\nmaxplayers: " + str(self.maxplayers))
 
 class Preference:
-	def __init__(self, game, userRating):
-		self.game = game
+	def __init__(self, name, userRating):
+		self.name = name
+		self.game = getStats(name)
 		self.userRating = userRating
 
 	def getPreference(self):
@@ -99,23 +107,23 @@ def xmlHandler(xml, tag):
 
 if __name__== "__main__":
 
-	g1 = Game("Red7", 7.2, 2.1, 15)
-	g2 = Game("Catan", 8.2, 2.3, 75)
-	g3 = Game("Seven Wonders", 7.5, 2.32, 60)
-	g4 = Game("Pocket Ops", 8.2, 2.3, 10)
-	g5 = Game("Gravwell", 7.1, 1.7, 20)
-	g5 = Game("Monopoly", 1.0, 0.1, 700)
+	# g1 = Game("Red7", 7.2, 2.1, 15)
+	# g2 = Game("Catan", 8.2, 2.3, 75)
+	# g3 = Game("Seven Wonders", 7.5, 2.32, 60)
+	# g4 = Game("Pocket Ops", 8.2, 2.3, 10)
+	# g5 = Game("Gravwell", 7.1, 1.7, 20)
+	# g5 = Game("Monopoly", 1.0, 0.1, 700)
 
 
 	u = User("Kyle", 1, 0.5)
 
-	p = Preference(g1, 1)
+	p = Preference("Monopoly", 1)
 
 
 	u.addPreference(p.getPreference)
 
-	# print(u)
+	print(u)
 
-	print(getStats("Catan"))
+	# print(getStats("Catan"))
 
 
