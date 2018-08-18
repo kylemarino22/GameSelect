@@ -158,7 +158,6 @@ if __name__== "__main__":
 
 	Users.insert(u1.dict())
 
-
 	# print(u2)
 
 
