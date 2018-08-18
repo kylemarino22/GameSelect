@@ -1,7 +1,8 @@
 import numpy as np
 from requests import get
-from xml.dom import minidom
+from xml.dom.minidom import parse, parseString
 import string
+import pymongo
 
 class User:
 
@@ -11,6 +12,17 @@ class User:
 		self.id = id
 		self.variance = variance
 		self.preferences = []
+
+	def dict(self):
+
+		# for preference in preferences:
+
+		# preferenceDict.a
+
+		return {'User': self.name,
+				'id': self.id,
+				'variance': self.variance}
+
 
 	def addPreference(self, name, rating):
 
@@ -55,6 +67,8 @@ class Preference:
 		self.game = getStats(name)
 		self.userRating = userRating
 
+	# def __dict__(self):
+
 	def __repr__(self):
 
 		return "\nGame: " + str(self.game) + "\nuserRating: " + str(self.userRating)
@@ -64,7 +78,7 @@ def getStats (name):
 	#Get id of board game
 	url = 'https://www.boardgamegeek.com/xmlapi/search?search=' + name + '&exact=1'
 	response = get(url)
-	xml = minidom.parseString(response.text)
+	xml = parseString(response.text)
 	boardgame = xml.getElementsByTagName('boardgame')
 	id = boardgame[0].attributes['objectid'].value
 
@@ -73,11 +87,13 @@ def getStats (name):
 	response = get(url)
 	text = response.text
 
+	# print (text)
 	#filter out non ascii characters for xml parse
 	printable = set(string.printable)
-	text = filter(lambda x: x in string.printable, text)
+	text = "".join(list(filter(lambda x: x in string.printable, text)))
 
-	xml = minidom.parseString(text)
+	# print(text)
+	xml = parseString(text)
 
 	average = xmlHandler(xml, 'average')
 	bayesaverage = xmlHandler(xml, 'bayesaverage')
@@ -112,13 +128,13 @@ if __name__== "__main__":
 
 	boardgameList = ["Monopoly", "Catan", "Pocket+Ops",
 					 "7+Wonders", "Sheriff+of+Nottingham", "Splendor",
-					 "Gravwell", "New+Angeles", "Cosmic+Encounter",
+					 "Gravwell:+escape+from+the+9th+dimension", "New+Angeles", "Cosmic+Encounter",
 					 "Codenames", "The Resistance"]
 
 
 
 	u1 = User("Kyle", 1, 0.5)
-	u1.addPreference("Monopoly", 1.0)
+	u1.addPreference("Sheriff+of+Nottingham", 1.0)
 	u1.addPreference("Catan", 5.7)
 	u1.addPreference("Pocket+Ops", 7.3)
 
@@ -128,17 +144,22 @@ if __name__== "__main__":
 	u2.addPreference("Splendor", 6)
 
 	u3 = User("Jamsheed", 3, 0.5)
-	u3.addPreference("Gravwell", 9)
+	u3.addPreference("Gravwell:+escape+from+the+9th+dimension", 9)
 	u3.addPreference("Sheriff+of+Nottingham", 5)
 	u3.addPreference("New+Angeles", 5)
 
-	Users = [u, u2, u3]
+	myclient = pymongo.MongoClient("mongodb://localhost:27017/")
 
-	selector = GameSelector(Users, boardgameList, 30, 45)
+	mydb = myclient["GameSelect"]
+
+	Users = mydb.Users
+
+	# print(dict(u1))
+
+	Users.insert(u1.dict())
 
 
-
-	print(u2)
+	# print(u2)
 
 
 
