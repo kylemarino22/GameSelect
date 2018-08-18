@@ -57,7 +57,7 @@ class Preference:
 
 	def __repr__(self):
 
-		return "Game: " + str(self.game) + "\nuserRating: " + str(self.userRating)
+		return "\nGame: " + str(self.game) + "\nuserRating: " + str(self.userRating)
 
 def getStats (name):
 
@@ -94,15 +94,51 @@ def xmlHandler(xml, tag):
 
 	return xml.getElementsByTagName(tag)[0].firstChild.nodeValue
 
+
+class GameSelector:
+
+	def __init__(self, Users, Games, minTime, maxTime):
+
+		self.Users = Users
+		self.Games = Games
+		self.minTime = minTime
+		self.maxTime = maxTime
+
+	def selectGame(self):
+		return "Sheriff+of+Nottingham"
+
+
 if __name__== "__main__":
 
+	boardgameList = ["Monopoly", "Catan", "Pocket+Ops",
+					 "7+Wonders", "Sheriff+of+Nottingham", "Splendor",
+					 "Gravwell", "New+Angeles", "Cosmic+Encounter",
+					 "Codenames", "The Resistance"]
 
-	u = User("Kyle", 1, 0.5)
-	u.addPreference("Monopoly", 1.0)
-	u.addPreference("Catan", 5.7)
-	u.addPreference("Pocket+Ops", 7.3)
 
-	print(u)
+
+	u1 = User("Kyle", 1, 0.5)
+	u1.addPreference("Monopoly", 1.0)
+	u1.addPreference("Catan", 5.7)
+	u1.addPreference("Pocket+Ops", 7.3)
+
+	u2 = User("Shaheen", 2, 0.5)
+	u2.addPreference("7+Wonders", 4)
+	u2.addPreference("Sheriff+of+Nottingham", 3)
+	u2.addPreference("Splendor", 6)
+
+	u3 = User("Jamsheed", 3, 0.5)
+	u3.addPreference("Gravwell", 9)
+	u3.addPreference("Sheriff+of+Nottingham", 5)
+	u3.addPreference("New+Angeles", 5)
+
+	Users = [u, u2, u3]
+
+	selector = GameSelector(Users, boardgameList, 30, 45)
+
+
+
+	print(u2)
 
 
 
