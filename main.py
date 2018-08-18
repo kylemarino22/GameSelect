@@ -11,22 +11,24 @@ class User:
 		self.name = name
 		self.id = id
 		self.variance = variance
-		self.preferences = []
+		self.gamesOwned = []
 
 	def dict(self):
 
-		# for preference in preferences:
+		gamesOwnedDict = []
 
-		# preferenceDict.a
+		for game in self.gamesOwned:
+			gamesOwnedDict.append(game.dict())
 
 		return {'User': self.name,
 				'id': self.id,
-				'variance': self.variance}
+				'variance': self.variance,
+				'gamesOwned': gamesOwnedDict}
 
 
-	def addPreference(self, name, rating):
+	def addGame(self, name, rating):
 
-		self.preferences.append(Preference(name, rating));
+		self.gamesOwned.append(Preference(name, rating));
 
 	def __repr__(self):
 
@@ -49,6 +51,7 @@ class Game:
 		self.minplayers = minplayers
 		self.maxplayers = maxplayers
 
+
 	def __repr__(self):
 
 		return ("\nName: " + self.name +
@@ -64,10 +67,11 @@ class Preference:
 
 	def __init__(self, name, userRating):
 		self.name = name
-		self.game = getStats(name)
 		self.userRating = userRating
 
-	# def __dict__(self):
+	def dict(self):
+		return {'Game': self.name,
+				'userRating': self.userRating}
 
 	def __repr__(self):
 
@@ -132,27 +136,16 @@ if __name__== "__main__":
 					 "Codenames", "The Resistance"]
 
 
-
-	u1 = User("Kyle", 1, 0.5)
-	u1.addPreference("Sheriff+of+Nottingham", 1.0)
-	u1.addPreference("Catan", 5.7)
-	u1.addPreference("Pocket+Ops", 7.3)
-
-	u2 = User("Shaheen", 2, 0.5)
-	u2.addPreference("7+Wonders", 4)
-	u2.addPreference("Sheriff+of+Nottingham", 3)
-	u2.addPreference("Splendor", 6)
-
-	u3 = User("Jamsheed", 3, 0.5)
-	u3.addPreference("Gravwell:+escape+from+the+9th+dimension", 9)
-	u3.addPreference("Sheriff+of+Nottingham", 5)
-	u3.addPreference("New+Angeles", 5)
-
 	myclient = pymongo.MongoClient("mongodb://localhost:27017/")
 
 	mydb = myclient["GameSelect"]
 
 	Users = mydb.Users
+
+	u1 = User("Kyle", 1, 0.5)
+	u1.addGame("Monopoly", 3)
+	u1.addGame("Catan", 6)
+	u1.addGame("Pandemic", 9)
 
 	# print(dict(u1))
 
