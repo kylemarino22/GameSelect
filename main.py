@@ -38,9 +38,15 @@ if __name__== "__main__":
 
 	u1 = users.User("Kyle", 1, 0.5)
 
-	u1.scrapePreferences("Shaheenthebean", mydb)
+	u1.deleteUser(mydb)
 
+	u1.scrapePreferences("Shaheenthebean", mydb)
+	
 	Users.insert(u1.dict())
+
+	u1.deleteGame("7 Wonders", mydb)
+
+
 
 
 
