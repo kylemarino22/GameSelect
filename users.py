@@ -28,20 +28,6 @@ class User:
 				'variance': self.variance,
 				'gamesOwned': gamesOwnedDict}
 
-	def deleteUser(self, db):
-		db.Users.delete_one({'User':self.name })
-
-	def deleteGame(self, game, db):
-		db.Users.update({'User':self.name},
-						{'$pull':{'gamesOwned':{'Game': game}}})
-
-	def updateRating(self, game, rating, db):
-		db.Users.update({'User':self.name,'gamesOwned.Game': game},
-						{'$set':{'gamesOwned.$.userRating': rating}})
-
-	def addGame(self, name, rating):
-		self.gamesOwned.append(Preference(name, rating));
-
 	def scrapePreferences(self, username, db):
 		url = 'https://boardgamegeek.com/xmlapi2/collection?username='+ username +'&stats=1&excludesubtype=boardgameexpansion'
 		response = get(url)
@@ -85,6 +71,20 @@ def checkForGame(name, db):
 def addGame(gameDict, db):
 	Games = db.Games
 	Games.insert(gameDict)
+
+def deleteUser(db, user):
+    db.Users.delete_one({'User': user})
+    
+    def deleteGame(game, db, user):
+        db.Users.update({'User': user},
+                        {'$pull':{'gamesOwned':{'Game': game}}})
+    
+    def updateRating(game, rating, db, user):
+        db.Users.update({'User': user,'gamesOwned.Game': game},
+                        {'$set':{'gamesOwned.$.userRating': rating}})
+    
+#    def addGame(name, rating, user):
+#        self.gamesOwned.append(Preference(name, rating));
 
 
 class Preference:
