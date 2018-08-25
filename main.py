@@ -11,33 +11,33 @@ import commands
 
 
 class GameSelector:
-    
+
     def __init__(self, Users, Games, minTime, maxTime):
-        
+
         self.Users = Users
         self.Games = Games
         self.minTime = minTime
         self.maxTime = maxTime
-    
+
     def selectGame(self):
         return "Sheriff+of+Nottingham"
 
 
 if __name__== "__main__":
-    
+
     boardgameList = ["Monopoly", "Catan", "Pocket+Ops",
                      "7+Wonders", "Sheriff+of+Nottingham", "Splendor",
                      "Gravwell:+escape+from+the+9th+dimension", "New+Angeles", "Cosmic+Encounter",
                      "Codenames", "The Resistance"]
 
     myclient = pymongo.MongoClient("mongodb://localhost:27017/")
-     
+
     mydb = myclient["GameSelect"]
-     
+
     Users = mydb.Users
-     
-     
-     
+
+
+
     #    u1 = users.User("Kyle", 1, 0.5)
     #
     #    u1.deleteUser(mydb)
@@ -47,17 +47,11 @@ if __name__== "__main__":
     #    Users.insert(u1.dict())
     #
     #    u1.deleteGame("7 Wonders", mydb)
-     
+
     while(1):
         inputCommand = input("Enter a Command:\n")
-    
+
         if(inputCommand == "q"):
             break
-    
+
         commands.Handler(inputCommand, mydb)
-
-
-
-
-
-

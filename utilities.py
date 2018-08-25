@@ -14,6 +14,3 @@ def xmlAttrib(xml, tag, attrib):
 def filterText(text):
 	printable = set(string.printable)
 	return "".join(list(filter(lambda x: x in string.printable, text)))
-
-
-
