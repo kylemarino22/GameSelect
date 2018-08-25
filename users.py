@@ -3,7 +3,7 @@ from requests import get
 from xml.dom.minidom import parse, parseString
 import string
 import pymongo
-
+import time
 import games
 import utilities as util
 
@@ -37,7 +37,7 @@ class User:
 
 		xml = parseString(text)
 
-		
+
 		items = xml.getElementsByTagName("item")
 
 		if items is None:
@@ -55,7 +55,18 @@ class User:
 			if(checkForGame(game, db)):
 				print(game + " doesn't exist")
 				# print(item.toprettyxml())
-				addGame(games.getStats(item, game), db)
+				temp = games.getStats(item, game)
+				gameurl = 'https://www.boardgamegeek.com/xmlapi2/thing?id='+str(temp['id'])+'&stats=1'
+				gameresponse = get(gameurl)
+				gametext = gameresponse.text
+				gamexml = parseString(gametext)
+				counts = gamexml.getElementsByTagName('poll')[0].getElementsByTagName('results')
+				countsdict = {}
+				for c in counts:
+					countsdict[c.getAttribute('numplayers')] = {n.getAttribute('value'):n.getAttribute('numvotes') for n in c.getElementsByTagName('result')}
+				temp['playercountpoll'] = countsdict
+				addGame(temp, db)
+				time.sleep(10)
 
 	def __repr__(self):
 
@@ -74,36 +85,15 @@ def addGame(gameDict, db):
 	Games.insert(gameDict)
 
 def deleteUser(db, user):
-	db.Users.delete_one({'User': user})
+    db.Users.delete_one({'User': user})
 
 def deleteGame(game, db, user):
-	db.Users.update({'User': user},
-					{'$pull':{'gamesOwned':{'Game': game}}})
-
-def updateStack(game, db, user):
-	db.Users.update({'User':user},
-					{'$push': {'gameStack': {'$each': [game], '$position': 0}}})
-
-	db.Users.update({'User':user},
-					{'$unset': {'gameStack': {"gameStack.3": 1}}})
-
-	db.Users.update({'User':user},
-					{'$pull' : {'list' : None}})
-
-
-
+        db.Users.update({'User': user},
+                        {'$pull':{'gamesOwned':{'Game': game}}})
 
 def updateRating(game, rating, db, user):
-	db.Users.update({'User': user,'gamesOwned.Game': game},
-					{'$set':{'gamesOwned.$.userRating': rating}})
-
-# def updateStack(db, user):
-# 	db.Users.update({'User': user, 'gameStack'
-
-def addToStack(stack, name):
-	stack.insert(0, name)
-	if(len(stack) > 30):
-		stack.remove(30)
+        db.Users.update({'User': user,'gamesOwned.Game': game},
+                        {'$set':{'gamesOwned.$.userRating': rating}})
 
 #    def addGame(name, rating, user):
 #        self.gamesOwned.append(Preference(name, rating));
@@ -122,6 +112,3 @@ class Preference:
 	def __repr__(self):
 
 		return "\nGame: " + str(self.game) + "\nuserRating: " + str(self.userRating)
-
-
-
