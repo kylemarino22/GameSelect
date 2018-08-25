@@ -85,15 +85,36 @@ def addGame(gameDict, db):
 	Games.insert(gameDict)
 
 def deleteUser(db, user):
-    db.Users.delete_one({'User': user})
+	db.Users.delete_one({'User': user})
 
 def deleteGame(game, db, user):
-        db.Users.update({'User': user},
-                        {'$pull':{'gamesOwned':{'Game': game}}})
+	db.Users.update({'User': user},
+					{'$pull':{'gamesOwned':{'Game': game}}})
+
+def updateStack(game, db, user):
+	db.Users.update({'User':user},
+					{'$push': {'gameStack': {'$each': [game], '$position': 0}}})
+
+	db.Users.update({'User':user},
+					{'$unset': {'gameStack': {"gameStack.3": 1}}})
+
+	db.Users.update({'User':user},
+					{'$pull' : {'list' : None}})
+
+
+
 
 def updateRating(game, rating, db, user):
-        db.Users.update({'User': user,'gamesOwned.Game': game},
-                        {'$set':{'gamesOwned.$.userRating': rating}})
+	db.Users.update({'User': user,'gamesOwned.Game': game},
+					{'$set':{'gamesOwned.$.userRating': rating}})
+
+# def updateStack(db, user):
+# 	db.Users.update({'User': user, 'gameStack'
+
+def addToStack(stack, name):
+	stack.insert(0, name)
+	if(len(stack) > 30):
+		stack.remove(30)
 
 #    def addGame(name, rating, user):
 #        self.gamesOwned.append(Preference(name, rating));
