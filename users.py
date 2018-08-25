@@ -15,6 +15,7 @@ class User:
 		self.id = id
 		self.variance = variance
 		self.gamesOwned = []
+		self.stack = []
 
 	def dict(self):
 
@@ -26,7 +27,8 @@ class User:
 		return {'User': self.name,
 				'id': self.id,
 				'variance': self.variance,
-				'gamesOwned': gamesOwnedDict}
+				'gamesOwned': gamesOwnedDict,
+				'gameStack' : self.stack}
 
 	def scrapePreferences(self, username, db):
 		url = 'https://boardgamegeek.com/xmlapi2/collection?username='+ username +'&stats=1&excludesubtype=boardgameexpansion'
@@ -55,7 +57,6 @@ class User:
 				# print(item.toprettyxml())
 				addGame(games.getStats(item, game), db)
 
-
 	def __repr__(self):
 
 		s = "User: " + self.name + "\nid: " + str(self.id) + "\nvariance: " + str(self.variance) + "\npreferences: "
@@ -73,16 +74,37 @@ def addGame(gameDict, db):
 	Games.insert(gameDict)
 
 def deleteUser(db, user):
-    db.Users.delete_one({'User': user})
-    
-    def deleteGame(game, db, user):
-        db.Users.update({'User': user},
-                        {'$pull':{'gamesOwned':{'Game': game}}})
-    
-    def updateRating(game, rating, db, user):
-        db.Users.update({'User': user,'gamesOwned.Game': game},
-                        {'$set':{'gamesOwned.$.userRating': rating}})
-    
+	db.Users.delete_one({'User': user})
+
+def deleteGame(game, db, user):
+	db.Users.update({'User': user},
+					{'$pull':{'gamesOwned':{'Game': game}}})
+
+def updateStack(game, db, user):
+	db.Users.update({'User':user},
+					{'$push': {'gameStack': {'$each': [game], '$position': 0}}})
+
+	db.Users.update({'User':user},
+					{'$unset': {'gameStack': {"gameStack.3": 1}}})
+
+	db.Users.update({'User':user},
+					{'$pull' : {'list' : None}})
+
+
+
+
+def updateRating(game, rating, db, user):
+	db.Users.update({'User': user,'gamesOwned.Game': game},
+					{'$set':{'gamesOwned.$.userRating': rating}})
+
+# def updateStack(db, user):
+# 	db.Users.update({'User': user, 'gameStack'
+
+def addToStack(stack, name):
+	stack.insert(0, name)
+	if(len(stack) > 30):
+		stack.remove(30)
+
 #    def addGame(name, rating, user):
 #        self.gamesOwned.append(Preference(name, rating));
 

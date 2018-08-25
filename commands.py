@@ -19,6 +19,10 @@ def Handler(command, db):
         users.deleteUser(db, username)
         print("deleted user")
 
+    elif(command == "playedGame"):
+    	game = input("Enter a played game:\n")
+    	users.updateStack(game, db, "bob")
+
 #    elif(command == ")
 
 
