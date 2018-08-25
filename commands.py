@@ -21,6 +21,7 @@ def Handler(command, db):
 
     elif(command == "playedGame"):
     	game = input("Enter a played game:\n")
-    	users.updateStack(game, db, "bob")
+        username = input("Username:\n")
+    	users.updateStack(game, db, username)
 
 #    elif(command == ")

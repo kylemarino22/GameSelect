@@ -95,11 +95,9 @@ def updateStack(game, db, user):
 	db.Users.update({'User':user},
 					{'$push': {'gameStack': {'$each': [game], '$position': 0}}})
 
+	# Store the last 30 board games played
 	db.Users.update({'User':user},
-					{'$unset': {'gameStack': {"gameStack.3": 1}}})
-
-	db.Users.update({'User':user},
-					{'$pull' : {'list' : None}})
+					{'$unset': {"gameStack.31": 1}})
 
 
 
