@@ -57,16 +57,20 @@ class User:
 				# print(item.toprettyxml())
 				temp = games.getStats(item, game)
 				gameurl = 'https://www.boardgamegeek.com/xmlapi2/thing?id='+str(temp['id'])+'&stats=1'
+				print(temp['id'])
 				gameresponse = get(gameurl)
 				gametext = gameresponse.text
 				gamexml = parseString(gametext)
 				counts = gamexml.getElementsByTagName('poll')[0].getElementsByTagName('results')
 				countsdict = {}
 				for c in counts:
-					countsdict[c.getAttribute('numplayers')] = {n.getAttribute('value'):n.getAttribute('numvotes') for n in c.getElementsByTagName('result')}
+					scores = {n.getAttribute('value'):n.getAttribute('numvotes') for n in c.getElementsByTagName('result')}
+					countsdict[c.getAttribute('numplayers')] = calcPlayerRating(int(scores['Best']),
+																				int(scores['Recommended']), 
+																				int(scores['Not Recommended']))
 				temp['playercountpoll'] = countsdict
 				addGame(temp, db)
-				time.sleep(10)
+				time.sleep(1.5)
 
 	def __repr__(self):
 
@@ -98,6 +102,15 @@ def updateStack(game, db, user):
 	# Store the last 30 board games played
 	db.Users.update({'User':user},
 					{'$unset': {"gameStack.31": 1}})
+
+
+def calcPlayerRating(Best, Recommended, notRec):
+
+	if(Best + Recommended + notRec == 0):
+		return 0
+	num = 2*Best + 1 *Recommended -1*notRec + 1*(Best+Recommended+notRec)
+	den = (3) * (Best+Recommended+notRec)
+	return num / den
 
 
 
