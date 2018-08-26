@@ -12,29 +12,28 @@ import commands
 
 class GameSelector:
 
-    def __init__(self, Users, Games, minTime, maxTime):
+	def __init__(self, Users, Games, minTime, maxTime):
 
-        self.Users = Users
-        self.Games = Games
-        self.minTime = minTime
-        self.maxTime = maxTime
+		self.Users = Users
+		self.Games = Games
+		self.maxTime = maxTime
 
-    def selectGame(self):
-        return "Sheriff+of+Nottingham"
+	def selectGame(self):
+		return "Sheriff+of+Nottingham"
 
 
 if __name__== "__main__":
 
-    myclient = pymongo.MongoClient("mongodb://localhost:27017/")
+	myclient = pymongo.MongoClient("mongodb://localhost:27017/")
 
-    mydb = myclient["GameSelect"]
+	mydb = myclient["GameSelect"]
 
-    Users = mydb.Users
+	Users = mydb.Users
 
-    while(1):
-        inputCommand = input("Enter a Command:\n")
+	while(1):
+		inputCommand = input("Enter a Command:\n")
 
-        if(inputCommand == "q"):
-            break
+		if(inputCommand == "q"):
+			break
 
-        commands.Handler(inputCommand, mydb)
+		commands.Handler(inputCommand, mydb)
