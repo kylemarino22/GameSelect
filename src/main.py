@@ -12,14 +12,29 @@ import commands
 
 class GameSelector:
 
-	def __init__(self, Users, Games, minTime, maxTime):
+	def __init__(self, Users, minTime, maxTime, db):
 
 		self.Users = Users
-		self.Games = Games
 		self.maxTime = maxTime
+		self.db = db
+
 
 	def selectGame(self):
-		return "Sheriff+of+Nottingham"
+		availableGames = []
+		for User in self.Users:
+			userGamesCursor = self.db.Users.find({'User': User}, {"gamesOwned.Game":1})
+
+			for obj in userGamesCursor:
+				gamesObjList = obj["gamesOwned"]
+
+				for game in gamesObjList:
+					gameID = game["Game"]
+
+					availableGames.append(gameID)
+
+		print(availableGames)
+
+
 
 
 if __name__== "__main__":
@@ -35,5 +50,9 @@ if __name__== "__main__":
 
 		if(inputCommand == "q"):
 			break
+
+		if(inputCommand == "test"):
+			gs = GameSelector(["Kyle"], 10, 30, mydb)
+			gs.selectGame()
 
 		commands.Handler(inputCommand, mydb)

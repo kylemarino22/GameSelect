@@ -24,4 +24,3 @@ def Handler(command, db):
 		username = input("Username:\n")
 		users.updateStack(game, db, username)
 
-#    elif(command == ")
