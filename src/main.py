@@ -19,7 +19,7 @@ class GameSelector:
 		self.db = db
 
 
-	def selectGame(self):
+	def getAvailableGames(self):
 		availableGames = []
 		for User in self.Users:
 			print(User)
@@ -35,9 +35,26 @@ class GameSelector:
 						availableGames.append(gameID)
 
 
-		
+		self.availableGames = availableGames
 		print(availableGames)
 
+	def genScore(self, gameID):
+		gameCursor = self.db.Games.find({'id':gameID})
+		for obj in gameCursor:
+
+			maxplaytime = obj["maxplaytime"]
+			if(maxplaytime > self.maxTime):
+				print("game too long")
+				return 0
+
+			playerCountScore = obj["playercountpoll"][str(len(self.Users))]
+
+			if(playerCountScore < 0):
+				print("playerCountScore too low")
+				return 0
+
+			# average = obj[]
+			print(obj)
 
 
 
@@ -56,7 +73,7 @@ if __name__== "__main__":
 			break
 
 		if(inputCommand == "test"):
-			gs = GameSelector(["bob","a"], 10, 30, mydb)
-			gs.selectGame()
+			gs = GameSelector(["bob","a"], 10, 29, mydb)
+			gs.genScore(68448)
 
 		commands.Handler(inputCommand, mydb)
