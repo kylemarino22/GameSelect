@@ -74,7 +74,7 @@ class User:
 																				int(scores['Not Recommended']))
 				temp['playercountpoll'] = countsdict
 				addGame(temp, db)
-				time.sleep(1.5)
+				time.sleep(2)
 
 	def __repr__(self):
 
@@ -114,7 +114,8 @@ def calcPlayerRating(Best, Recommended, notRec):
 		return 0
 	num = 2*Best + 1 *Recommended -1*notRec + 1*(Best+Recommended+notRec)
 	den = (3) * (Best+Recommended+notRec)
-	return num / den
+	# *3 - 1 scales from -1-2
+	return (num / den) * 3 -1
 
 
 
