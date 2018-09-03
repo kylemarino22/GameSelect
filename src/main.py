@@ -22,6 +22,7 @@ class GameSelector:
 	def selectGame(self):
 		availableGames = []
 		for User in self.Users:
+			print(User)
 			userGamesCursor = self.db.Users.find({'User': User}, {"gamesOwned.Game":1})
 
 			for obj in userGamesCursor:
@@ -30,8 +31,11 @@ class GameSelector:
 				for game in gamesObjList:
 					gameID = game["Game"]
 
-					availableGames.append(gameID)
+					if gameID not in availableGames:
+						availableGames.append(gameID)
 
+
+		
 		print(availableGames)
 
 
@@ -52,7 +56,7 @@ if __name__== "__main__":
 			break
 
 		if(inputCommand == "test"):
-			gs = GameSelector(["Kyle"], 10, 30, mydb)
+			gs = GameSelector(["bob","a"], 10, 30, mydb)
 			gs.selectGame()
 
 		commands.Handler(inputCommand, mydb)

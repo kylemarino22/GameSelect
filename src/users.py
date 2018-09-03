@@ -45,19 +45,23 @@ class User:
 			return
 
 		for item in items:
-			game = util.xmlTag(item, "name")
+			# get id of game
+			game = item.getAttribute('objectid')
+			#get rating of game
 			rating = util.xmlAttrib(item, "rating", "value")
 
 			if (rating != 'N/A'):
 				self.gamesOwned.append(Preference(game, int(rating)))
 			else:
 				self.gamesOwned.append(Preference(game, rating))
+
+			#check if the game is in global game list
 			if(checkForGame(game, db)):
-				print(game + " doesn't exist")
-				# print(item.toprettyxml())
-				temp = games.getStats(item, game)
+				gameName = util.xmlTag(item, "name")
+				print(gameName + " doesn't exist")
+				temp = games.getStats(item, gameName)
 				gameurl = 'https://www.boardgamegeek.com/xmlapi2/thing?id='+str(temp['id'])+'&stats=1'
-				print(temp['id'])
+				# print(temp['id'])
 				gameresponse = get(gameurl)
 				gametext = gameresponse.text
 				gamexml = parseString(gametext)
@@ -79,9 +83,9 @@ class User:
 			s += str(p)
 		return s
 
-def checkForGame(name, db):
+def checkForGame(gameID, db):
 	Games = db.Games
-	if Games.find_one({"name": name}) is None:
+	if Games.find_one({"id": int(gameID)}) is None:
 		return 1
 
 def addGame(gameDict, db):
@@ -128,7 +132,7 @@ def addToStack(stack, name):
 		stack.remove(30)
 
 #    def addGame(name, rating, user):
-#        self.gamesOwned.append(Preference(name, rating));
+#    self.gamesOwned.append(Preference(name, rating));
 
 
 class Preference:
