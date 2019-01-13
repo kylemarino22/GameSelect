@@ -14,3 +14,21 @@ def xmlAttrib(xml, tag, attrib):
 def filterText(text):
 	printable = set(string.printable)
 	return "".join(list(filter(lambda x: x in string.printable, text)))
+
+def getStats (xml, name):
+	average = xmlAttrib(xml, 'average', 'value')
+	bayesaverage = xmlAttrib(xml, 'bayesaverage', 'value')
+	minplaytime = xmlAttrib(xml, 'stats', 'minplaytime')
+	maxplaytime = xmlAttrib(xml, 'stats', 'maxplaytime')
+	minplayers = xmlAttrib(xml, 'stats', 'minplayers')
+	maxplayers = xmlAttrib(xml, 'stats', 'maxplayers')
+	id = xml.getAttribute('objectid')
+
+	return {'name':name,
+			'average':float(average),
+			'bayesaverage':float(bayesaverage),
+			'minplaytime':int(minplaytime),
+			'maxplaytime':int(maxplaytime),
+			'minplayers':int(minplayers),
+			'maxplayers':int(maxplayers),
+			'id':int(id)}
