@@ -11,7 +11,6 @@ import gameselect
 
 
 
-
 if __name__== "__main__":
 
 	myclient = pymongo.MongoClient("mongodb://localhost:27017/")
@@ -25,5 +24,9 @@ if __name__== "__main__":
 
 		if(inputCommand == "q"):
 			break
+
+		if(inputCommand == "test"):
+			gs = GameSelector(["bob","a"], 10, 29, mydb)
+			gs.genScore(68448)
 
 		commands.Handler(inputCommand, mydb)

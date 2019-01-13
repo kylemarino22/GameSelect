@@ -45,28 +45,36 @@ class User:
 			return
 
 		for item in items:
-			game = util.xmlTag(item, "name")
+			# get id of game
+			game = item.getAttribute('objectid')
+			#get rating of game
 			rating = util.xmlAttrib(item, "rating", "value")
 
 			if (rating != 'N/A'):
 				self.gamesOwned.append(Preference(game, int(rating)))
 			else:
 				self.gamesOwned.append(Preference(game, rating))
+
+			#check if the game is in global game list
 			if(checkForGame(game, db)):
-				print(game + " doesn't exist")
-				# print(item.toprettyxml())
-				temp = games.getStats(item, game)
+				gameName = util.xmlTag(item, "name")
+				print(gameName + " doesn't exist")
+				temp = games.getStats(item, gameName)
 				gameurl = 'https://www.boardgamegeek.com/xmlapi2/thing?id='+str(temp['id'])+'&stats=1'
+				# print(temp['id'])
 				gameresponse = get(gameurl)
 				gametext = gameresponse.text
 				gamexml = parseString(gametext)
 				counts = gamexml.getElementsByTagName('poll')[0].getElementsByTagName('results')
 				countsdict = {}
 				for c in counts:
-					countsdict[c.getAttribute('numplayers')] = {n.getAttribute('value'):n.getAttribute('numvotes') for n in c.getElementsByTagName('result')}
+					scores = {n.getAttribute('value'):n.getAttribute('numvotes') for n in c.getElementsByTagName('result')}
+					countsdict[c.getAttribute('numplayers')] = calcPlayerRating(int(scores['Best']),
+																				int(scores['Recommended']), 
+																				int(scores['Not Recommended']))
 				temp['playercountpoll'] = countsdict
 				addGame(temp, db)
-				time.sleep(10)
+				time.sleep(2)
 
 	def __repr__(self):
 
@@ -75,9 +83,9 @@ class User:
 			s += str(p)
 		return s
 
-def checkForGame(name, db):
+def checkForGame(gameID, db):
 	Games = db.Games
-	if Games.find_one({"name": name}) is None:
+	if Games.find_one({"id": int(gameID)}) is None:
 		return 1
 
 def addGame(gameDict, db):
@@ -100,6 +108,16 @@ def updateStack(game, db, user):
 					{'$unset': {"gameStack.31": 1}})
 
 
+def calcPlayerRating(Best, Recommended, notRec):
+
+	if(Best + Recommended + notRec == 0):
+		return 0
+	num = 2*Best + 1 *Recommended -1*notRec + 1*(Best+Recommended+notRec)
+	den = (3) * (Best+Recommended+notRec)
+	# *3 - 1 scales from -1-2
+	return (num / den) * 3 -1
+
+
 
 
 def updateRating(game, rating, db, user):
@@ -115,7 +133,7 @@ def addToStack(stack, name):
 		stack.remove(30)
 
 #    def addGame(name, rating, user):
-#        self.gamesOwned.append(Preference(name, rating));
+#    self.gamesOwned.append(Preference(name, rating));
 
 
 class Preference:
