@@ -94,6 +94,10 @@ def addGame(gameDict, db):
 def deleteUser(db, user):
 	db.Users.delete_one({'User': user})
 
+def addGameOwned(preference, db, user):
+	db.Users.update({'User':user},
+					{'$push': {'gamesOwned':preference}}
+
 def deleteGame(game, db, user):
 	db.Users.update({'User': user},
 					{'$pull':{'gamesOwned':{'Game': game}}})

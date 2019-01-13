@@ -25,28 +25,30 @@ def Handler(command, db):
 		users.updateStack(game, db, username)
 
 	elif (command == "addGametoUser"):
-		nm = input("Username:\n")
-		user = db.Users.find_one({'User':nm})
-		if user==None:
+		input_name = input("Username:\n")
+		selectedUser = db.Users.find_one({'User':input_name})
+		if (selectedUser == None):
+			print("User not found!")
 			return
 		else:
-			gm = input("Game:\n")
-			game = db.Games.find_one({'name':gm})
-			if game == None:
+			input_game = input("Game:\n")
+			gameToAdd = db.Games.find_one({'name':input_game})
+			if (gameToAdd == None):
 				print("does not exist")
+				# TODO: path to scrape from bgg
 				return
 			else:
-				rating = input('Rating:\n')
-				if (rating != 'N/A'):
-					game['userRating'] = int(rating)
-
+				input_rating = input('Rating:\n')
+				userRating = 0
+				if (input_rating != 'N/A'):
+					userRating = int(input_rating)
 				else:
-					game['userRating'] = (rating)
+					# puts N/A into db
+					userRating = (input_rating)
 
-				for gam in user['gamesOwned']:
-					if game['name'] == gam['name']:
-						gam['userRating'] = game['userRating']
-						db.Users.update_one({'User':nm},{'$set':{'gamesOwned':user['gamesOwned']}})
+				#Check if user has game
+				for user_game in selectedUser['gamesOwned']:
+					if gameToAdd['name'] == user_game['name']:
+						user.updateRating(gameToAdd['name'], userRating, db, selectedUser['name'])
 						return
-				user['gamesOwned'].append(game)
-				db.Users.update_one({'User':nm},{'$set':{'gamesOwned':user['gamesOwned']}})
+					user.addGameOwned(Preference(gameToAdd['name'], userRating), db, selectedUser['name'])
