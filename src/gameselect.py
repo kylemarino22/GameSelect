@@ -6,12 +6,11 @@ import pymongo
 import time
 import utilities as util
 
+PLAYERCOUNT_CONST = 3
+QUEUE_CONST = 3
+AVERAGE_CONST = 3
 
 class GameSelector:
-
-	PLAYERCOUNT_CONST = 3
-	QUEUE_CONST = 3
-	AVERAGE_CONST = 3
 
 
 	def __init__(self, Users, minTime, maxTime, db):
@@ -55,29 +54,24 @@ class GameSelector:
 			print("playerCountScore too low")
 			return 0
 
-
+		averageRating = 0
 		for userName in self.Users:
-			userRatingCursor = self.db.Users.find_one({'User': userName,'gamesOwned.Game': str(gameID)},
+			userRatingObj = self.db.Users.find_one({'User': userName,'gamesOwned.id': gameID},
 														{'gamesOwned.$.userRating': 1});
 
-			# for obj in userRatingCursor:
-			# 	userRatingObj = obj["gamesOwned"]
-			#
-			# 	for game in userRatingCursor:
-			# 		rating = game["userRating"]
-			# 		print(rating)
+			if(userRatingObj == None):
+				print("User: " + userName + " does not exist");
+				return;
+			rating = userRatingObj['gamesOwned'][0]['userRating']
+			print(userName + ": " + str(rating))
 
+			averageRating += rating
 
-			print("here")
-			print(userRatingCursor)
+		averageRating = averageRating/len(self.Users)/10
 
-
-
-		# average = obj["average"]/10
-		#
-		# score = average * AVERAGE_CONST +
-		# 		playerCountScore * PLAYERCOUNT_CONST +
+		score = averageRating * AVERAGE_CONST + playerCountScore * PLAYERCOUNT_CONST
 
 
 		# average = obj[]
-		print(obj)
+		print("Average Rating: " + str(averageRating))
+		print("Score: " + str(score))
