@@ -26,8 +26,8 @@ def getStats (xml, name):
 	try:
 		minplaytime = xmlAttrib(xml, 'stats', 'minplaytime')
 
-	except:
-		minplaytime = 0
+	except ValueError:
+		minplayers = 0
 	
 
 	return {'name':name,
