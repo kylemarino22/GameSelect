@@ -36,19 +36,17 @@ class GameSelector:
 		print(availableGames)
 
 	def genScore(self, gameID):
-		gameCursor = self.db.Games.find({'id':gameID})
-		for obj in gameCursor:
+		gameCursor = self.db.Games.find({'id':gameID})[0]
+        maxplaytime = obj["maxplaytime"]
+		if(maxplaytime > self.maxTime):
+			print("game too long")
+			return 0
 
-			maxplaytime = obj["maxplaytime"]
-			if(maxplaytime > self.maxTime):
-				print("game too long")
-				return 0
+		playerCountScore = obj["playercountpoll"][str(len(self.Users))]
 
-			playerCountScore = obj["playercountpoll"][str(len(self.Users))]
+		if(playerCountScore < 0):
+			print("playerCountScore too low")
+			return 0
 
-			if(playerCountScore < 0):
-				print("playerCountScore too low")
-				return 0
-
-			# average = obj[]
-			print(obj)
+		# average = obj[]
+		print(obj)
