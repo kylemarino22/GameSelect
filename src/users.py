@@ -30,7 +30,7 @@ class User:
 				'gameStack' : self.stack}
 
 	def scrapePreferences(self, username, db):
-		url = 'https://boardgamegeek.com/xmlapi2/collection?username='+ username +'&stats=1&excludesubtype=boardgameexpansion'
+		url = 'https://boardgamegeek.com/xmlapi2/collection?username='+ username +'&stats=1&excludesubtype=boardgameexpansion&own=1'
 		response = get(url)
 		text = response.text
 
@@ -69,7 +69,7 @@ class User:
 				for c in counts:
 					scores = {n.getAttribute('value'):n.getAttribute('numvotes') for n in c.getElementsByTagName('result')}
 					countsdict[c.getAttribute('numplayers')] = calcPlayerRating(int(scores['Best']),
-																				int(scores['Recommended']), 
+																				int(scores['Recommended']),
 																				int(scores['Not Recommended']))
 				temp['playercountpoll'] = countsdict
 				addGame(temp, db)
@@ -111,10 +111,10 @@ def calcPlayerRating(Best, Recommended, notRec):
 
 	if(Best + Recommended + notRec == 0):
 		return 0
-	num = 2*Best + 1 *Recommended -1*notRec + 1*(Best+Recommended+notRec)
-	den = (3) * (Best+Recommended+notRec)
+	num = 3*Best + 2 *Recommended -0*notRec
+	den = (Best+Recommended+notRec)
 	# *3 - 1 scales from -1-2
-	return (num / den) * 3 -1
+	return (num / den) -1
 
 
 
