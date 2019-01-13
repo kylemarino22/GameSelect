@@ -96,7 +96,7 @@ def deleteUser(db, user):
 
 def addGameOwned(preference, db, user):
 	db.Users.update({'User':user},
-					{'$push': {'gamesOwned':preference}}
+					{'$push': {'gamesOwned':preference}})
 
 def deleteGame(game, db, user):
 	db.Users.update({'User': user},
