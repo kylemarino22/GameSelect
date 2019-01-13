@@ -1,4 +1,4 @@
-import users
+from users import *
 import utilities as utilities
 
 def Handler(command, db):
@@ -7,9 +7,10 @@ def Handler(command, db):
 		print("Adding User")
 		username = input("Username:\n")
 		bgg = input("BoardGameGeek Account:\n")
-		u = users.User(username, 1, 0.5)
-		u.scrapePreferences(bgg, db)
-		db.Users.insert(u.dict())
+		u = User(username, 1, 0.5)
+		if bgg != "none":
+			u.scrapePreferences(bgg, db)
+		db.Users.insert(u.dict(db))
 		print("added user")
 
 	elif(command == "deleteUser"):
@@ -23,3 +24,29 @@ def Handler(command, db):
 		username = input("Username:\n")
 		users.updateStack(game, db, username)
 
+	elif (command == "addGametoUser"):
+		nm = input("Username:\n")
+		user = db.Users.find_one({'User':nm})
+		if user==None:
+			return
+		else:
+			gm = input("Game:\n")
+			game = db.Games.find_one({'name':gm})
+			if game == None:
+				print("does not exist")
+				return
+			else:
+				rating = input('Rating:\n')
+				if (rating != 'N/A'):
+					game['userRating'] = int(rating)
+
+				else:
+					game['userRating'] = (rating)
+
+				for gam in user['gamesOwned']:
+					if game['name'] == gam['name']:
+						gam['userRating'] = game['userRating']
+						db.Users.update_one({'User':nm},{'$set':{'gamesOwned':user['gamesOwned']}})
+						return
+				user['gamesOwned'].append(game)
+				db.Users.update_one({'User':nm},{'$set':{'gamesOwned':user['gamesOwned']}})

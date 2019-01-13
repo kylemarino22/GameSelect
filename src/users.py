@@ -16,12 +16,12 @@ class User:
 		self.gamesOwned = []
 		self.stack = []
 
-	def dict(self):
+	def dict(self, db):
 
 		gamesOwnedDict = []
 
 		for game in self.gamesOwned:
-			gamesOwnedDict.append(game.dict())
+			gamesOwnedDict.append(game.dict(db))
 
 		return {'User': self.name,
 				'id': self.id,
@@ -141,9 +141,10 @@ class Preference:
 		self.name = name
 		self.userRating = userRating
 
-	def dict(self):
-		return {'Game': self.name,
-				'userRating': self.userRating}
+	def dict(self, db):
+		t = db.Games.find_one({'id':int(self.name)})
+		t['userRating'] = self.userRating
+		return t
 
 	def __repr__(self):
 
