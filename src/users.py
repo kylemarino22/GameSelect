@@ -4,7 +4,6 @@ from xml.dom.minidom import parse, parseString
 import string
 import pymongo
 import time
-import games
 import utilities as util
 
 class User:
@@ -59,7 +58,7 @@ class User:
 			if(checkForGame(game, db)):
 				gameName = util.xmlTag(item, "name")
 				print(gameName + " doesn't exist")
-				temp = games.getStats(item, gameName)
+				temp = util.getStats(item, gameName)
 				gameurl = 'https://www.boardgamegeek.com/xmlapi2/thing?id='+str(temp['id'])+'&stats=1'
 				# print(temp['id'])
 				gameresponse = get(gameurl)

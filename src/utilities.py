@@ -18,11 +18,17 @@ def filterText(text):
 def getStats (xml, name):
 	average = xmlAttrib(xml, 'average', 'value')
 	bayesaverage = xmlAttrib(xml, 'bayesaverage', 'value')
-	minplaytime = xmlAttrib(xml, 'stats', 'minplaytime')
 	maxplaytime = xmlAttrib(xml, 'stats', 'maxplaytime')
 	minplayers = xmlAttrib(xml, 'stats', 'minplayers')
 	maxplayers = xmlAttrib(xml, 'stats', 'maxplayers')
 	id = xml.getAttribute('objectid')
+
+	try:
+		minplaytime = xmlAttrib(xml, 'stats', 'minplaytime')
+
+	except:
+		minplaytime = 0
+	
 
 	return {'name':name,
 			'average':float(average),
