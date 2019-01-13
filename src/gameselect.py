@@ -6,12 +6,11 @@ import pymongo
 import time
 import utilities as util
 
+PLAYERCOUNT_CONST = 3
+QUEUE_CONST = 3
+AVERAGE_CONST = 3
 
 class GameSelector:
-
-	PLAYERCOUNT_CONST = 3
-	QUEUE_CONST = 3
-	AVERAGE_CONST = 3
 
 
 	def __init__(self, Users, minTime, maxTime, db):
@@ -68,13 +67,11 @@ class GameSelector:
 
 			averageRating += rating
 
-		averageRating = averageRating/len(self.Users)
+		averageRating = averageRating/len(self.Users)/10
 
-		# average = obj["average"]/10
-		#
-		# score = average * AVERAGE_CONST +
-		# 		playerCountScore * PLAYERCOUNT_CONST +
+		score = averageRating * AVERAGE_CONST + playerCountScore * PLAYERCOUNT_CONST
 
 
 		# average = obj[]
 		print("Average Rating: " + str(averageRating))
+		print("Score: " + str(score))
