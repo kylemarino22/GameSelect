@@ -38,15 +38,14 @@ def Handler(command, db):
 			else:
 				rating = input('Rating:\n')
 				if (rating != 'N/A'):
-					game['userRating'] = int(rating)
+					rate = int(rating)
 
 				else:
-					game['userRating'] = (rating)
+					rate = (rating)
 
-				for gam in user['gamesOwned']:
-					if game['name'] == gam['name']:
-						gam['userRating'] = game['userRating']
-						db.Users.update_one({'User':nm},{'$set':{'gamesOwned':user['gamesOwned']}})
+				for index, gam in enumerate(user['gamesOwned']):
+					if db.Games.find_one({'id':gam['id'] } )['name'] == gm:
+						db.Users.update_one({'User':nm},{'$set':{'gamesOwned.{}.userRating'.format(index):rate}})
 						return
-				user['gamesOwned'].append(game)
-				db.Users.update_one({'User':nm},{'$set':{'gamesOwned':user['gamesOwned']}})
+				pref = Preference(db.Games.find_one({'name':gm})['id'],rate )
+				db.Users.update_one({'User':nm},{'$push':{'gamesOwned':pref.dict(db)}})

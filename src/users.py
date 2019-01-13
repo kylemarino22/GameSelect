@@ -142,10 +142,10 @@ class Preference:
 		self.userRating = userRating
 
 	def dict(self, db):
-		t = db.Games.find_one({'id':int(self.name)})
-		t['userRating'] = self.userRating
-		return t
+		# t = db.Games.find_one({'id':int(self.name)})
+		# t['userRating'] = self.userRating
+		return {'userRating':self.userRating, 'id':int(self.name)}
 
 	def __repr__(self):
 
-		return "\nGame: " + str(self.game) + "\nuserRating: " + str(self.userRating)
+		return "\nGame: " + str(self.name) + "\nuserRating: " + str(self.userRating)
