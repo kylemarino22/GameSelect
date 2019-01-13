@@ -7,19 +7,9 @@ import pymongo
 import users
 import utilities
 import commands
+import gameselect
 
 
-
-class GameSelector:
-
-	def __init__(self, Users, Games, minTime, maxTime):
-
-		self.Users = Users
-		self.Games = Games
-		self.maxTime = maxTime
-
-	def selectGame(self):
-		return "Sheriff+of+Nottingham"
 
 
 if __name__== "__main__":
