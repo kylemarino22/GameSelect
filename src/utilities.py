@@ -24,7 +24,6 @@ def getStats (xml, name):
 	maxplayers = xmlAttrib(xml, 'stats', 'maxplayers')
 	id = xml.getAttribute('objectid')
 
-	
 
 	if (minplaytime == ''): minplaytime = 0
 	
