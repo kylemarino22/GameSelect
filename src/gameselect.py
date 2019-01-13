@@ -55,23 +55,20 @@ class GameSelector:
 			print("playerCountScore too low")
 			return 0
 
-
+		averageRating = 0
 		for userName in self.Users:
-			userRatingCursor = self.db.Users.find_one({'User': userName,'gamesOwned.Game': str(gameID)},
+			userRatingObj = self.db.Users.find_one({'User': userName,'gamesOwned.id': gameID},
 														{'gamesOwned.$.userRating': 1});
 
-			# for obj in userRatingCursor:
-			# 	userRatingObj = obj["gamesOwned"]
-			#
-			# 	for game in userRatingCursor:
-			# 		rating = game["userRating"]
-			# 		print(rating)
+			if(userRatingObj == None):
+				print("User: " + userName + " does not exist");
+				return;
+			rating = userRatingObj['gamesOwned'][0]['userRating']
+			print(userName + ": " + str(rating))
 
+			averageRating += rating
 
-			print("here")
-			print(userRatingCursor)
-
-
+		averageRating = averageRating/len(self.Users)
 
 		# average = obj["average"]/10
 		#
@@ -80,4 +77,4 @@ class GameSelector:
 
 
 		# average = obj[]
-		print(obj)
+		print("Average Rating: " + str(averageRating))
