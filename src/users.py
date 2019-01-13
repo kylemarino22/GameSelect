@@ -30,7 +30,7 @@ class User:
 				'gameStack' : self.stack}
 
 	def scrapePreferences(self, username, db):
-		url = 'https://boardgamegeek.com/xmlapi2/collection?username='+ username +'&stats=1&excludesubtype=boardgameexpansion'
+		url = 'https://boardgamegeek.com/xmlapi2/collection?username='+ username +'&stats=1&excludesubtype=boardgameexpansion&own=1'
 		response = get(url)
 		text = response.text
 
@@ -69,7 +69,7 @@ class User:
 				for c in counts:
 					scores = {n.getAttribute('value'):n.getAttribute('numvotes') for n in c.getElementsByTagName('result')}
 					countsdict[c.getAttribute('numplayers')] = calcPlayerRating(int(scores['Best']),
-																				int(scores['Recommended']), 
+																				int(scores['Recommended']),
 																				int(scores['Not Recommended']))
 				temp['playercountpoll'] = countsdict
 				addGame(temp, db)
