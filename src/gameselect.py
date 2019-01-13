@@ -36,8 +36,8 @@ class GameSelector:
 		print(availableGames)
 
 	def genScore(self, gameID):
-		gameCursor = self.db.Games.find({'id':gameID})[0]
-        maxplaytime = obj["maxplaytime"]
+		obj = self.db.Games.find({'id':gameID})[0]
+		maxplaytime = obj["maxplaytime"]
 		if(maxplaytime > self.maxTime):
 			print("game too long")
 			return 0
