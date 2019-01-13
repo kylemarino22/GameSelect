@@ -51,4 +51,4 @@ def Handler(command, db):
 					if gameToAdd['name'] == user_game['name']:
 						user.updateRating(gameToAdd['name'], userRating, db, selectedUser['name'])
 						return
-					user.addGameOwned(Preference(gameToAdd['name'], userRating), db, selectedUser['name'])
+				user.addGameOwned(Preference(gameToAdd['name'], userRating), db, selectedUser['name'])

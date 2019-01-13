@@ -146,7 +146,7 @@ class Preference:
 		self.userRating = userRating
 
 	def dict(self, db):
-		t = db.Games.find_one({'id':int(self.name)})
+		t['name'] = self.name
 		t['userRating'] = self.userRating
 		return t
 
