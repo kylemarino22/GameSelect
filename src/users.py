@@ -145,6 +145,7 @@ class Preference:
 		t = {'id': int(self.name), 'userRating': self.userRating}
 		return t
 
+
 	def __repr__(self):
 
-		return "\nGame: " + str(self.game) + "\nuserRating: " + str(self.userRating)
+		return "\nGame: " + str(self.name) + "\nuserRating: " + str(self.userRating)
