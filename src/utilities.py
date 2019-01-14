@@ -26,7 +26,7 @@ def getStats (xml, name):
 
 
 	if (minplaytime == ''): minplaytime = 0
-	
+
 
 	return {'name':name,
 			'average':float(average),
@@ -36,3 +36,7 @@ def getStats (xml, name):
 			'minplayers':int(minplayers),
 			'maxplayers':int(maxplayers),
 			'id':int(id)}
+
+def idToName(gameID,db):
+	nameObj = db.Games.find_one({'id':gameID}, {'name':1})
+	return nameObj['name']
