@@ -76,11 +76,22 @@ class GameSelector:
 			else:
 				averageRating += rating
 
+			stack_index = self.db.Users.aggregate([
+													{ '$match': { 'User': userName } },
+													{ '$project': { 'matchedIndex': { '$indexOfArray': [ '$gameStack', gameID ] } } } ] )
+
+			if(gameID == 131357):
+				print(stack_index.next())
+
+
 		try:
 			averageRating = averageRating/(len(self.Users) - NA_counter)/10
 		except ZeroDivisionError:
 			print("All Scores are N/A!")
 			averageRating = 0.5
+
+
+
 
 		score = averageRating * AVERAGE_CONST + playerCountScore * PLAYERCOUNT_CONST
 
