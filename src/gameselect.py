@@ -5,9 +5,10 @@ import string
 import pymongo
 import time
 import utilities as util
+from math import e
 
 PLAYERCOUNT_CONST = 1
-QUEUE_CONST = 3
+STACK_CONST = 3
 AVERAGE_CONST = 1
 
 class GameSelector:
@@ -59,7 +60,9 @@ class GameSelector:
 			return -100
 
 		averageRating = 0
-		NA_counter = 0;
+		stack_score = 0
+		NA_counter = 0
+		empty_stack_counter = 0
 		for userName in self.Users:
 			userRatingObj = self.db.Users.find_one({'User': userName,'gamesOwned.id': gameID},
 														{'gamesOwned.$.userRating': 1});
@@ -76,12 +79,18 @@ class GameSelector:
 			else:
 				averageRating += rating
 
-			stack_index = self.db.Users.aggregate([
+			stack_index_Obj = self.db.Users.aggregate([
 													{ '$match': { 'User': userName } },
-													{ '$project': { 'matchedIndex': { '$indexOfArray': [ '$gameStack', gameID ] } } } ] )
+													{ '$project': { 'matchedIndex': { '$indexOfArray': [ '$gameStack', gameID ] } } }
+													] )
+			stack_index = stack_index_Obj.next()['matchedIndex']
 
-			if(gameID == 131357):
-				print(stack_index.next())
+			if(stack_index == -1):
+				empty_stack_counter += 1
+			stack_score += self.calcStackScore(stack_index)
+
+
+
 
 
 		try:
@@ -90,10 +99,15 @@ class GameSelector:
 			print("All Scores are N/A!")
 			averageRating = 0.5
 
+		try:
+			stack_score = stack_score/(len(self.Users) - empty_stack_counter)
+		except ZeroDivisionError:
+			print("All stacks are empty")
+			stack_score = 1
 
 
-
-		score = averageRating * AVERAGE_CONST + playerCountScore * PLAYERCOUNT_CONST
+		print(stack_score)
+		score = averageRating * AVERAGE_CONST + playerCountScore * PLAYERCOUNT_CONST + stack_score * STACK_CONST
 
 
 		# average = obj[]
@@ -101,6 +115,18 @@ class GameSelector:
 		print("Score: " + str(score))
 		return score;
 
+
+	def calcStackScore(self, index):
+
+		n = len(self.availableGames) #Number of games
+		H = 1.05 #Magic Number chosen that provides slope of logistic function
+		K = -10/(n**H) #Changes the slope of function
+		B = 3 #Changes where the inflection point is
+
+		numerator = 1.1 #Scales function from -0.1 to 1
+		denominator = 1 + e**(K * (index - n/B))
+
+		return (numerator/denominator) - 0.1
 
 	def genAllScores(self):
 		gameScores = []
