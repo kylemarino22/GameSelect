@@ -109,7 +109,7 @@ class GameSelector:
 
 			gameScores.append(t)
 
-		print(gameScores)
+		print(sorted(gameScores, key = lambda i: i['score']))
 		print("\n=====================================\n")
 		print("Recommended Game:\n")
 		print(gameScores[pos])
