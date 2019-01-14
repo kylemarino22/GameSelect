@@ -67,7 +67,8 @@ class GameSelector:
 			if(userRatingObj == None):
 				print("User: " + userName + " does not exist");
 				rating = 'N/A'
-			rating = userRatingObj['gamesOwned'][0]['userRating']
+			else:
+				rating = userRatingObj['gamesOwned'][0]['userRating']
 			print(userName + ": " + str(rating))
 
 			if(rating == 'N/A'):
