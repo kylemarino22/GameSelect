@@ -6,9 +6,9 @@ import pymongo
 import time
 import utilities as util
 
-PLAYERCOUNT_CONST = 0.5
+PLAYERCOUNT_CONST = 1
 QUEUE_CONST = 3
-AVERAGE_CONST = 3
+AVERAGE_CONST = 1
 
 class GameSelector:
 

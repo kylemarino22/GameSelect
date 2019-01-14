@@ -26,7 +26,7 @@ if __name__== "__main__":
 			break
 
 		if(inputCommand == "test"):
-			gs = gameselect.GameSelector(["Bob","a","b","c"], 10, 100, mydb)
+			gs = gameselect.GameSelector(["Bob","a","b","c","d"], 10, 100, mydb)
 			gs.genAllScores()
 
 		commands.Handler(inputCommand, mydb)

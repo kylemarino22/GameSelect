@@ -114,7 +114,7 @@ def calcPlayerRating(Best, Recommended, notRec):
 	num = 3*Best + 2 *Recommended -0*notRec
 	den = (Best+Recommended+notRec)
 	# *3 - 1 scales from -1-2
-	return (num / den) -1
+	return min((num / den) -1, 0.5)
 
 
 
