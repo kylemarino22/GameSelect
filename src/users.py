@@ -119,10 +119,17 @@ def calcPlayerRating(Best, Recommended, notRec):
 
 
 
-def updateRating(game, rating, db, user):
-	db.Users.update({'User': user,'gamesOwned.Game': game},
-					{'$set':{'gamesOwned.$.userRating': rating}})
+# def updateRating(game, rating, db, user):
+# 	db.Users.update({'User': user,'gamesOwned.Game': game},
+# 					{'$set':{'gamesOwned.$.userRating': rating}})
 
+def updateRating(name, rating, db, user):
+	for index, gam in enumerate( db.Users.find_one({'User':user})['gamesOwned']   ):
+		if db.Games.find_one({'id':gam['id'] } )['name'] == name:
+			db.Users.update_one({'User':user},{'$set':{'gamesOwned.{}.userRating'.format(index):rating}})
+			return
+	pref = Preference(db.Games.find_one({'name':name})['id'],rating )
+	db.Users.update_one({'User':user},{'$push':{'gamesOwned':pref.dict(db)}})
 # def updateStack(db, user):
 # 	db.Users.update({'User': user, 'gameStack'
 

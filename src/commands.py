@@ -16,7 +16,7 @@ def Handler(command, db):
 	elif(command == "deleteUser"):
 		print("deleting user")
 		username = input("Username:\n")
-		users.deleteUser(db, username)
+		deleteUser(db, username)
 		print("deleted user")
 
 	elif(command == "playedGame"):
@@ -42,10 +42,4 @@ def Handler(command, db):
 
 				else:
 					rate = (rating)
-
-				for index, gam in enumerate(user['gamesOwned']):
-					if db.Games.find_one({'id':gam['id'] } )['name'] == gm:
-						db.Users.update_one({'User':nm},{'$set':{'gamesOwned.{}.userRating'.format(index):rate}})
-						return
-				pref = Preference(db.Games.find_one({'name':gm})['id'],rate )
-				db.Users.update_one({'User':nm},{'$push':{'gamesOwned':pref.dict(db)}})
+				updateRating(gm,rate,db,nm)
