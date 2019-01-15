@@ -113,3 +113,5 @@ class GameSelector:
 		print("\n=====================================\n")
 		print("Recommended Game:\n")
 		print(gameScores[pos])
+
+		return gameScores[pos]

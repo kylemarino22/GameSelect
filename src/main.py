@@ -26,7 +26,25 @@ if __name__== "__main__":
 			break
 
 		if(inputCommand == "test"):
-			gs = gameselect.GameSelector(["Bob","a","b","c","d"], 10, 100, mydb)
-			gs.genAllScores()
+			b = {'name': "Kyle",
+				'age': 18,
+				'Chad': "Yes"}
+			c = {'name': "Shaheen",
+				'age': 18,
+				'Chad': "No"}
+			d = {'name': "Jamsheed",
+					'age': 18,
+					'Chad': "No"}
+			a = [{'e': b, 'w':4},
+				{'e': c,'w':1},
+				{'e':d, 'w': 2}]
 
+			wl = utilities.WeightedList(a)
+			for x in range(100):
+				print(wl.random())
+			# gs = gameselect.GameSelector(["Bob","a","b","c","d"], 10, 100, mydb)
+			# game = gs.genAllScores()
+			#
+			# inputCommand = input("Will you play this game")
+			#
 		commands.Handler(inputCommand, mydb)
