@@ -40,8 +40,10 @@ def getStats (xml, name):
 
 def idToName(gameID,db):
 	nameObj = db.Games.find_one({'id':gameID}, {'name':1})
+
 	return nameObj['name']
 
+<<<<<<< HEAD
 
 
 class WeightedList:
@@ -88,3 +90,12 @@ class WeightedList:
 			sum += elem['w']
 			if(sum > index):
 				return elem['e']
+=======
+def nameToID(gameName,db):
+	idObj = db.Games.find_one({'name':gameName}, {'id':1})
+
+	if(idObj == None):
+		print("invalid name")
+		return
+	return int(idObj['id'])
+>>>>>>> master
