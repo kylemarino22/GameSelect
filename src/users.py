@@ -5,16 +5,22 @@ import string
 import pymongo
 import time
 import utilities as util
+import encryption
 
 class User:
 
-	def __init__(self, name, id, variance):
+	def __init__(self, name, password, id, variance):
 
 		self.name = name
 		self.id = id
 		self.variance = variance
 		self.gamesOwned = []
 		self.stack = []
+
+		self.securityDict = encryption.createUserSecurity(name, password)
+		self.encryptionDict =  {'password':password,
+								'keySalt': self.securityDict['keySalt'],
+								'IV': self.securityDict['IV']}
 
 	def dict(self, db):
 
@@ -23,11 +29,15 @@ class User:
 		for game in self.gamesOwned:
 			gamesOwnedDict.append(game.dict(db))
 
-		return {'User': self.name,
-				'id': self.id,
-				'variance': self.variance,
-				'gamesOwned': gamesOwnedDict,
-				'gameStack' : self.stack}
+		self.securityDict['id'] = self.id
+
+		data = {'variance': self.variance,
+			'gamesOwned': gamesOwnedDict,
+			'gameStack': self.stack}
+
+		self.securityDict['userData'] = encryption.encryptDict(data,self.encryptionDict)
+
+		return self.securityDict
 
 	def scrapePreferences(self, username, db):
 		url = 'https://boardgamegeek.com/xmlapi2/collection?username='+ username +'&stats=1&excludesubtype=boardgameexpansion&own=1'
@@ -99,12 +109,18 @@ def deleteGame(game, db, user):
 					{'$pull':{'gamesOwned':{'Game': game}}})
 
 def updateStack(game, db, user):
+	id= util.nameToID(game,db)
+
 	db.Users.update({'User':user},
-					{'$push': {'gameStack': {'$each': [game], '$position': 0}}})
+					{'$push': {'gameStack': {'$each': [id], '$position': 0}}})
 
 	# Store the last 30 board games played
 	db.Users.update({'User':user},
 					{'$unset': {"gameStack.31": 1}})
+
+
+
+
 
 
 def calcPlayerRating(Best, Recommended, notRec):

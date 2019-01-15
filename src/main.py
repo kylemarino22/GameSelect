@@ -8,6 +8,7 @@ import users
 import utilities
 import commands
 import gameselect
+import encryption
 
 
 
@@ -26,7 +27,9 @@ if __name__== "__main__":
 			break
 
 		if(inputCommand == "test"):
-			gs = gameselect.GameSelector(["Bob","a","b","c","d"], 10, 100, mydb)
-			gs.genAllScores()
+			# gs = gameselect.GameSelector(["Bob","a","b","c","d"], 10, 100, mydb)
+			# gs.genAllScores()
+
+			encryption.test()
 
 		commands.Handler(inputCommand, mydb)

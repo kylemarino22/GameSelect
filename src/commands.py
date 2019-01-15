@@ -1,4 +1,5 @@
 from users import *
+from encryption import *
 import utilities as utilities
 
 def Handler(command, db):
@@ -7,7 +8,8 @@ def Handler(command, db):
 		print("Adding User")
 		username = input("Username:\n")
 		bgg = input("BoardGameGeek Account:\n")
-		u = User(username, 1, 0.5)
+		password = input("Password:\n")
+		u = User(username, password, 1, 0.5)
 		if bgg != "none":
 			u.scrapePreferences(bgg, db)
 		db.Users.insert(u.dict(db))
@@ -23,6 +25,10 @@ def Handler(command, db):
 		game = input("Enter a played game:\n")
 		username = input("Username:\n")
 		users.updateStack(game, db, username)
+
+	elif(command == "password"):
+		password = input("Enter a password:\n")
+		createUserSecurity("a",password)
 
 	elif (command == "addGametoUser"):
 		nm = input("Username:\n")
