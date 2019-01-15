@@ -99,19 +99,26 @@ class GameSelector:
 		pos = 0;
 		for availableGame in self.availableGames:
 
-			t = {}
-			t['name'] = util.idToName(availableGame,self.db)
-			t['id'] = availableGame
-			t['score'] = self.genGameScore(availableGame)
-			if(t['score'] > maxScore):
-				maxScore = t['score']
+			t = {'e':{}}
+			t['e']['name'] = util.idToName(availableGame,self.db)
+			t['e']['id'] = availableGame
+			t['w'] = self.genGameScore(availableGame)
+			if(t['w'] > maxScore):
+				maxScore = t['w']
 				pos = len(gameScores)
 
-			gameScores.append(t)
+			if(t['w'] > 0):
+				gameScores.append(t)
 
-		print(sorted(gameScores, key = lambda i: i['score']))
+		gameScores = sorted(gameScores, key = lambda i: i['w'])
+
+		for x in range(len(self.availableGames)
+
+		wl = util.WeightedList(gameScores)
+
+		print(sorted(gameScores, key = lambda i: i['w']))
 		print("\n=====================================\n")
 		print("Recommended Game:\n")
-		print(gameScores[pos])
+		print(wl.random())
 
 		return gameScores[pos]
