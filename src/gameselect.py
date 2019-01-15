@@ -107,7 +107,8 @@ class GameSelector:
 
 
 		print(stack_score)
-		score = averageRating * AVERAGE_CONST + playerCountScore * PLAYERCOUNT_CONST + stack_score * STACK_CONST
+		score = averageRating * AVERAGE_CONST + playerCountScore * PLAYERCOUNT_CONST
+		#+ stack_score * STACK_CONST
 
 
 		# average = obj[]
@@ -147,13 +148,26 @@ class GameSelector:
 			if(t['w'] > 0):
 				gameScores.append(t)
 
-		gameScores = sorted(gameScores, key = lambda i: i['w'])
 
-		for x in range(len(self.availableGames)
+		#Sort and Validate Scores
+		sortedScores = sorted(gameScores, key = lambda i: i['w'])
+		print(sortedScores)
+		print("=======================================\n")
+		validScores = sortedScores[-int((len(sortedScores)/4)):]
+		print(validScores)
 
-		wl = util.WeightedList(gameScores)
+		#valid scores should be mapped to a range from 0-1 before WeightedList
+		weightList = [elem['w'] for elem in validScores]
+		minWeight = min(weightList)
+		maxWeight = max(weightList)
 
-		print(sorted(gameScores, key = lambda i: i['w']))
+		for elem in validScores:
+			elem['w'] = util.mapRange(elem['w'], minWeight, maxWeight, 1,2)
+
+		#Weight the scores based on probability
+		wl = util.WeightedList(validScores)
+
+		print(wl.list)
 		print("\n=====================================\n")
 		print("Recommended Game:\n")
 		print(wl.random())
