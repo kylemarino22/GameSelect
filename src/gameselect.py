@@ -86,8 +86,9 @@ class GameSelector:
 			stack_index = stack_index_Obj.next()['matchedIndex']
 
 			if(stack_index == -1):
-				empty_stack_counter += 1
-			stack_score += self.calcStackScore(stack_index)
+				stack_score += 1
+			else:
+				stack_score += self.calcStackScore(stack_index)
 
 
 
@@ -100,15 +101,14 @@ class GameSelector:
 			averageRating = 0.5
 
 		try:
-			stack_score = stack_score/(len(self.Users) - empty_stack_counter)
+			stack_score = stack_score/(len(self.Users))
 		except ZeroDivisionError:
 			print("All stacks are empty")
 			stack_score = 1
 
 
 		print(stack_score)
-		score = averageRating * AVERAGE_CONST + playerCountScore * PLAYERCOUNT_CONST
-		#+ stack_score * STACK_CONST
+		score = averageRating * AVERAGE_CONST + playerCountScore * PLAYERCOUNT_CONST + stack_score * STACK_CONST
 
 
 		# average = obj[]
