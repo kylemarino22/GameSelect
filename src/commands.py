@@ -1,5 +1,5 @@
-from users import *
-import utilities as utilities
+from src.users import *
+import src.utilities as utilities
 
 def Handler(command, db):
 

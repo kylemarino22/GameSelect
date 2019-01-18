@@ -4,7 +4,7 @@ from xml.dom.minidom import parse, parseString
 import string
 import pymongo
 import time
-import utilities as util
+import src.utilities as util
 
 class User:
 

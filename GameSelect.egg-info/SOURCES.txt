@@ -1,0 +1,13 @@
+README.md
+setup.py
+GameSelect.egg-info/PKG-INFO
+GameSelect.egg-info/SOURCES.txt
+GameSelect.egg-info/dependency_links.txt
+GameSelect.egg-info/requires.txt
+GameSelect.egg-info/top_level.txt
+src/__init__.py
+src/commands.py
+src/gameselect.py
+src/routing.py
+src/users.py
+src/utilities.py
