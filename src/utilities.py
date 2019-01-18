@@ -3,6 +3,7 @@ from requests import get
 from xml.dom.minidom import parse, parseString
 import string
 import pymongo
+import random
 
 def xmlTag(xml, tag):
 	return xml.getElementsByTagName(tag)[0].firstChild.nodeValue
@@ -42,10 +43,59 @@ def idToName(gameID,db):
 
 	return nameObj['name']
 
-def nameToID(gameName,db):
-	idObj = db.Games.find_one({'name':gameName}, {'id':1})
+def mapRange(value, leftMin, leftMax, rightMin, rightMax):
+    # Figure out how 'wide' each range is
+    leftSpan = leftMax - leftMin
+    rightSpan = rightMax - rightMin
 
-	if(idObj == None):
-		print("invalid name")
-		return
-	return int(idObj['id'])
+    # Convert the left range into a 0-1 range (float)
+    valueScaled = float(value - leftMin) / float(leftSpan)
+
+    # Convert the 0-1 range into a value in the right range.
+    return rightMin + (valueScaled * rightSpan)
+
+
+class WeightedList:
+
+
+	#list needs to be [{e:Element, w:weight},...]
+	def __init__(self,list):
+		self.list = list
+		self.totalWeight = 0
+		self.fullNorm()
+
+
+	def remove(self,index):
+		self.list.remove(index)
+		self.shortNorm(elem['w'])
+
+	def get(self,index):
+		return self.list[index]['e']
+
+	def push(self, elem):
+		self.list.append(elem)
+		self.shortNorm(elem['w'])
+
+	def fullNorm(self):
+		for elem in self.list:
+			self.totalWeight += elem['w']
+		for elem in self.list:
+			elem['w'] = elem['w']/self.totalWeight
+
+	def shortNorm(self, weight):
+		for elem in self.list:
+			elem['w'] = elem['w']*self.totalWeight
+		self.totalWeight += weight
+		for elem in self.list:
+			elem['w'] = elem['w']/self.totalWeight
+
+
+
+	#Returns random element from list based on weighting
+	def random(self):
+		index = random.random()
+		sum = 0
+		for elem in self.list:
+			sum += elem['w']
+			if(sum > index):
+				return elem['e']

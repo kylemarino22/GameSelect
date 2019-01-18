@@ -26,7 +26,14 @@ if __name__== "__main__":
 			break
 
 		if(inputCommand == "test"):
-			gs = gameselect.GameSelector(["Bob","a","b","c","d"], 10, 100, mydb)
-			gs.genAllScores()
 
+
+			# wl = utilities.WeightedList(a)
+			# for x in range(100):
+			# 	print(wl.random())
+			gs = gameselect.GameSelector(["Bob","a","b","c","d"], 10, 100, mydb)
+			game = gs.genAllScores()
+			#
+			# inputCommand = input("Will you play this game")
+			#
 		commands.Handler(inputCommand, mydb)
