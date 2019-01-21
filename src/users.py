@@ -7,6 +7,9 @@ import pymongo
 import time
 import src.utilities as util
 
+from itsdangerous import (TimedJSONWebSignatureSerializer
+                          as Serializer, BadSignature, SignatureExpired)
+
 class User:
 
 	def __init__(self, name, variance):
@@ -81,8 +84,17 @@ class User:
 			s += str(p)
 		return s
 
+<<<<<<< HEAD
 def checkForGame(gameID):
 	Games = settings.mydb.Games
+=======
+	def generate_auth_token(self, expiration = 600):
+		s = Serializer(app.config['SECRET_KEY'], expires_in = expiration)
+		return s.dumps({ 'id': self.id })
+
+def checkForGame(gameID, db):
+	Games = db.Games
+>>>>>>> saving progress
 	if Games.find_one({"id": int(gameID)}) is None:
 		return 1
 
