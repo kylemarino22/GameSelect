@@ -1,3 +1,4 @@
+import settings
 import numpy as np
 from requests import get
 from xml.dom.minidom import parse, parseString
@@ -14,18 +15,17 @@ AVERAGE_CONST = 1
 class GameSelector:
 
 
-	def __init__(self, Users, minTime, maxTime, db):
+	def __init__(self, Users, minTime, maxTime):
 
 		self.Users = Users
 		self.maxTime = maxTime
 		self.minTime = minTime
-		self.db = db
 
 	def getAvailableGames(self):
 		availableGames = []
 		for User in self.Users:
 			print(User)
-			userGamesCursor = self.db.Users.find({'User': User}, {"gamesOwned.id":1})
+			userGamesCursor = settings.mydb.Users.find({'User': User}, {"gamesOwned.id":1})
 
 			for obj in userGamesCursor:
 				gamesObjList = obj['gamesOwned']
@@ -42,7 +42,7 @@ class GameSelector:
 		# print(availableGames)
 
 	def genGameScore(self, gameID):
-		obj = self.db.Games.find({'id':gameID})[0]
+		obj = settings.mydb.Games.find({'id':gameID})[0]
 
 		maxplaytime = obj["maxplaytime"]
 		if(maxplaytime > self.maxTime):
@@ -64,7 +64,7 @@ class GameSelector:
 		NA_counter = 0
 		empty_stack_counter = 0
 		for userName in self.Users:
-			userRatingObj = self.db.Users.find_one({'User': userName,'gamesOwned.id': gameID},
+			userRatingObj = settings.mydb.Users.find_one({'User': userName,'gamesOwned.id': gameID},
 														{'gamesOwned.$.userRating': 1});
 
 			if(userRatingObj == None):
@@ -79,7 +79,7 @@ class GameSelector:
 			else:
 				averageRating += rating
 
-			stack_index_Obj = self.db.Users.aggregate([
+			stack_index_Obj = settings.mydb.Users.aggregate([
 													{ '$match': { 'User': userName } },
 													{ '$project': { 'matchedIndex': { '$indexOfArray': [ '$gameStack', gameID ] } } }
 													] )
@@ -138,7 +138,7 @@ class GameSelector:
 		for availableGame in self.availableGames:
 
 			t = {'e':{}}
-			t['e']['name'] = util.idToName(availableGame,self.db)
+			t['e']['name'] = util.idToName(availableGame)
 			t['e']['id'] = availableGame
 			t['w'] = self.genGameScore(availableGame)
 			if(t['w'] > maxScore):

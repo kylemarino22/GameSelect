@@ -1,3 +1,4 @@
+import settings
 import numpy as np
 from requests import get
 from xml.dom.minidom import parse, parseString
@@ -15,19 +16,19 @@ class User:
 		self.gamesOwned = []
 		self.stack = []
 
-	def dict(self, db):
+	def dict(self):
 
 		gamesOwnedDict = []
 
 		for game in self.gamesOwned:
-			gamesOwnedDict.append(game.dict(db))
+			gamesOwnedDict.append(game.dict(settings.mydb))
 
 		return {'User': self.name,
 				'variance': self.variance,
 				'gamesOwned': gamesOwnedDict,
 				'gameStack' : self.stack}
 
-	def scrapePreferences(self, username, db):
+	def scrapePreferences(self, username):
 		url = 'https://boardgamegeek.com/xmlapi2/collection?username='+ username +'&stats=1&excludesubtype=boardgameexpansion&own=1'
 		response = get(url)
 		text = response.text
@@ -53,7 +54,7 @@ class User:
 				self.gamesOwned.append(Preference(game, rating))
 
 			#check if the game is in global game list
-			if(checkForGame(game, db)):
+			if(checkForGame(game)):
 				gameName = util.xmlTag(item, "name")
 				print(gameName + " doesn't exist")
 				temp = util.getStats(item, gameName)
@@ -70,7 +71,7 @@ class User:
 																				int(scores['Recommended']),
 																				int(scores['Not Recommended']))
 				temp['playercountpoll'] = countsdict
-				addGame(temp, db)
+				addGame(temp)
 				time.sleep(2)
 
 	def __repr__(self):
@@ -80,30 +81,30 @@ class User:
 			s += str(p)
 		return s
 
-def checkForGame(gameID, db):
-	Games = db.Games
+def checkForGame(gameID):
+	Games = settings.mydb.Games
 	if Games.find_one({"id": int(gameID)}) is None:
 		return 1
 
-def addGame(gameDict, db):
-	Games = db.Games
+def addGame(gameDict):
+	Games = settings.mydb.Games
 	Games.insert(gameDict)
 
-def deleteUser(db, user):
-	db.Users.delete_one({'User': user})
+def deleteUser(user):
+	settings.mydb.Users.delete_one({'User': user})
 
-def deleteGame(game, db, user):
-	db.Users.update({'User': user},
+def deleteGame(game, user):
+	settings.mydb.Users.update({'User': user},
 					{'$pull':{'gamesOwned':{'Game': game}}})
 
-def updateStack(game, db, user):
-	id= util.nameToID(game,db)
+def updateStack(game, user):
+	id= util.nameToID(game)
 
-	db.Users.update({'User':user},
+	settings.mydb.Users.update({'User':user},
 					{'$push': {'gameStack': {'$each': [id], '$position': 0}}})
 
 	# Store the last 30 board games played
-	db.Users.update({'User':user},
+	settings.mydb.Users.update({'User':user},
 					{'$unset': {"gameStack.31": 1}})
 
 
@@ -121,19 +122,19 @@ def calcPlayerRating(Best, Recommended, notRec):
 
 
 
-# def updateRating(game, rating, db, user):
-# 	db.Users.update({'User': user,'gamesOwned.Game': game},
+# def updateRating(game, rating, user):
+# 	settings.mydb.Users.update({'User': user,'gamesOwned.Game': game},
 # 					{'$set':{'gamesOwned.$.userRating': rating}})
 
-def updateRating(name, rating, db, user):
-	for index, gam in enumerate( db.Users.find_one({'User':user})['gamesOwned']   ):
-		if db.Games.find_one({'id':gam['id'] } )['name'] == name:
-			db.Users.update_one({'User':user},{'$set':{'gamesOwned.{}.userRating'.format(index):rating}})
+def updateRating(name, rating, user):
+	for index, gam in enumerate( settings.mydb.Users.find_one({'User':user})['gamesOwned']   ):
+		if settings.mydb.Games.find_one({'id':gam['id'] } )['name'] == name:
+			settings.mydb.Users.update_one({'User':user},{'$set':{'gamesOwned.{}.userRating'.format(index):rating}})
 			return
-	pref = Preference(db.Games.find_one({'name':name})['id'],rating )
-	db.Users.update_one({'User':user},{'$push':{'gamesOwned':pref.dict(db)}})
+	pref = Preference(settings.mydb.Games.find_one({'name':name})['id'],rating )
+	settings.mydb.Users.update_one({'User':user},{'$push':{'gamesOwned':pref.dict(settings.mydb)}})
 # def updateStack(db, user):
-# 	db.Users.update({'User': user, 'gameStack'
+# 	settings.mydb.Users.update({'User': user, 'gameStack'
 
 def addToStack(stack, name):
 	stack.insert(0, name)
@@ -150,7 +151,7 @@ class Preference:
 		self.name = name
 		self.userRating = userRating
 
-	def dict(self, db):
+	def dict(self):
 		t = {'id': int(self.name), 'userRating': self.userRating}
 		return t
 

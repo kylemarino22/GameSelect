@@ -1,7 +1,9 @@
+import settings
+
 from users import *
 import utilities as utilities
 
-def Handler(command, db):
+def Handler(command):
 
 	if(command == "addUser"):
 		print("Adding User")
@@ -9,29 +11,29 @@ def Handler(command, db):
 		bgg = input("BoardGameGeek Account:\n")
 		u = User(username, 1, 0.5)
 		if bgg != "none":
-			u.scrapePreferences(bgg, db)
-		db.Users.insert(u.dict(db))
+			u.scrapePreferences(bgg)
+		settings.mydb.Users.insert(u.dict(settings.mydb))
 		print("added user")
 
 	elif(command == "deleteUser"):
 		print("deleting user")
 		username = input("Username:\n")
-		deleteUser(db, username)
+		deleteUser(username)
 		print("deleted user")
 
 	elif(command == "playedGame"):
 		game = input("Enter a played game:\n")
 		username = input("Username:\n")
-		updateStack(game, db, username)
+		updateStack(game, username)
 
 	elif (command == "addGametoUser"):
 		nm = input("Username:\n")
-		user = db.Users.find_one({'User':nm})
+		user = settings.mydb.Users.find_one({'User':nm})
 		if user==None:
 			return
 		else:
 			gm = input("Game:\n")
-			game = db.Games.find_one({'name':gm})
+			game = settings.mydb.Games.find_one({'name':gm})
 			if game == None:
 				print("does not exist")
 				return
@@ -42,4 +44,4 @@ def Handler(command, db):
 
 				else:
 					rate = (rating)
-				updateRating(gm,rate,db,nm)
+				updateRating(gm,rate,nm)

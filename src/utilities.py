@@ -1,3 +1,4 @@
+import settings
 import numpy as np
 from requests import get
 from xml.dom.minidom import parse, parseString
@@ -38,8 +39,8 @@ def getStats (xml, name):
 			'maxplayers':int(maxplayers),
 			'id':int(id)}
 
-def idToName(gameID,db):
-	nameObj = db.Games.find_one({'id':gameID}, {'name':1})
+def idToName(gameID):
+	nameObj = settings.mydb.Games.find_one({'id':gameID}, {'name':1})
 
 	return nameObj['name']
 

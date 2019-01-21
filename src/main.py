@@ -1,3 +1,6 @@
+import settings
+
+
 import numpy as np
 from requests import get
 from xml.dom.minidom import parse, parseString
@@ -11,13 +14,12 @@ import gameselect
 
 
 
+
 if __name__== "__main__":
 
-	myclient = pymongo.MongoClient("mongodb://localhost:27017/")
+	settings.mydb = pymongo.MongoClient("mongodb://localhost:27017/")["GameSelect"]
 
-	mydb = myclient["GameSelect"]
-
-	Users = mydb.Users
+	Users = settings.mydb.Users
 
 	while(1):
 		inputCommand = input("Enter a Command:\n")
@@ -31,9 +33,9 @@ if __name__== "__main__":
 			# wl = utilities.WeightedList(a)
 			# for x in range(100):
 			# 	print(wl.random())
-			gs = gameselect.GameSelector(["Bob","a","b","c","d"], 10, 100, mydb)
+			gs = gameselect.GameSelector(["Bob","a","b","c","d"], 10, 100)
 			game = gs.genAllScores()
 			#
 			# inputCommand = input("Will you play this game")
 			#
-		commands.Handler(inputCommand, mydb)
+		commands.Handler(inputCommand)
