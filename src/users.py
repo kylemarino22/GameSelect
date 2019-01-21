@@ -1,4 +1,4 @@
-import settings
+import src.globals
 import numpy as np
 from requests import get
 from xml.dom.minidom import parse, parseString
@@ -24,7 +24,7 @@ class User:
 		gamesOwnedDict = []
 
 		for game in self.gamesOwned:
-			gamesOwnedDict.append(game.dict(settings.mydb))
+			gamesOwnedDict.append(game.dict(globals.mydb))
 
 		return {'User': self.name,
 				'variance': self.variance,
@@ -84,39 +84,47 @@ class User:
 			s += str(p)
 		return s
 
-<<<<<<< HEAD
-def checkForGame(gameID):
-	Games = settings.mydb.Games
-=======
 	def generate_auth_token(self, expiration = 600):
 		s = Serializer(app.config['SECRET_KEY'], expires_in = expiration)
 		return s.dumps({ 'id': self.id })
 
-def checkForGame(gameID, db):
-	Games = db.Games
->>>>>>> saving progress
+	 @staticmethod
+    def verify_auth_token(token):
+        s = Serializer(app.config['SECRET_KEY'])
+        try:
+            data = s.loads(token)
+        except SignatureExpired:
+            return None # valid token, but expired
+        except BadSignature:
+            return None # invalid token
+        user = User.query.get(data['id'])
+        return user
+
+
+def checkForGame(gameID):
+	Games = globals.mydb.Games
 	if Games.find_one({"id": int(gameID)}) is None:
 		return 1
 
 def addGame(gameDict):
-	Games = settings.mydb.Games
+	Games = globals.mydb.Games
 	Games.insert(gameDict)
 
 def deleteUser(user):
-	settings.mydb.Users.delete_one({'User': user})
+	globals.mydb.Users.delete_one({'User': user})
 
 def deleteGame(game, user):
-	settings.mydb.Users.update({'User': user},
+	globals.mydb.Users.update({'User': user},
 					{'$pull':{'gamesOwned':{'Game': game}}})
 
 def updateStack(game, user):
 	id= util.nameToID(game)
 
-	settings.mydb.Users.update({'User':user},
+	globals.mydb.Users.update({'User':user},
 					{'$push': {'gameStack': {'$each': [id], '$position': 0}}})
 
 	# Store the last 30 board games played
-	settings.mydb.Users.update({'User':user},
+	globals.mydb.Users.update({'User':user},
 					{'$unset': {"gameStack.31": 1}})
 
 
@@ -135,18 +143,18 @@ def calcPlayerRating(Best, Recommended, notRec):
 
 
 # def updateRating(game, rating, user):
-# 	settings.mydb.Users.update({'User': user,'gamesOwned.Game': game},
+# 	globals.mydb.Users.update({'User': user,'gamesOwned.Game': game},
 # 					{'$set':{'gamesOwned.$.userRating': rating}})
 
 def updateRating(name, rating, user):
-	for index, gam in enumerate( settings.mydb.Users.find_one({'User':user})['gamesOwned']   ):
-		if settings.mydb.Games.find_one({'id':gam['id'] } )['name'] == name:
-			settings.mydb.Users.update_one({'User':user},{'$set':{'gamesOwned.{}.userRating'.format(index):rating}})
+	for index, gam in enumerate( globals.mydb.Users.find_one({'User':user})['gamesOwned']   ):
+		if globals.mydb.Games.find_one({'id':gam['id'] } )['name'] == name:
+			globals.mydb.Users.update_one({'User':user},{'$set':{'gamesOwned.{}.userRating'.format(index):rating}})
 			return
-	pref = Preference(settings.mydb.Games.find_one({'name':name})['id'],rating )
-	settings.mydb.Users.update_one({'User':user},{'$push':{'gamesOwned':pref.dict(settings.mydb)}})
+	pref = Preference(globals.mydb.Games.find_one({'name':name})['id'],rating )
+	globals.mydb.Users.update_one({'User':user},{'$push':{'gamesOwned':pref.dict(globals.mydb)}})
 # def updateStack(db, user):
-# 	settings.mydb.Users.update({'User': user, 'gameStack'
+# 	globals.mydb.Users.update({'User': user, 'gameStack'
 
 def addToStack(stack, name):
 	stack.insert(0, name)

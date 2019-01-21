@@ -1,5 +1,5 @@
-import settings
-
+import src.globals
+import src.config
 
 import numpy as np
 from requests import get
@@ -13,13 +13,14 @@ from src.routing import Routing
 
 
 app = Flask(__name__)
+app.config.from_pyfile('config.py')
 app.register_blueprint(Routing)
 
 
 if __name__== "__main__":
 	app.run()
 
-	settings.mydb = pymongo.MongoClient("mongodb://localhost:27017/")["GameSelect"]
+	globals.mydb = pymongo.MongoClient("mongodb://localhost:27017/")["GameSelect"]
 
 	Users = mydb.Users
 	print("hello", file=sys.stdout)
