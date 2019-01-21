@@ -16,7 +16,7 @@ class User:
 
 	def __init__(self, name):
 
-		self.name = name
+		self.username = name
 		self.gamesOwned = []
 		self.stack = []
 
@@ -27,7 +27,7 @@ class User:
 		for game in self.gamesOwned:
 			gamesOwnedDict.append(game.dict(globals.mydb))
 
-		return {'User': self.name,
+		return {'User': self.username,
 				'password_hash' : self.password_hash,
 				'password_salt' : self.salt,
 				'gamesOwned': gamesOwnedDict,
@@ -81,7 +81,7 @@ class User:
 
 	def __repr__(self):
 
-		s = "User: " + self.name + "\npreferences: "
+		s = "User: " + self.username + "\npreferences: "
 		for p in self.preferences:
 			s += str(p)
 		return s
@@ -105,13 +105,13 @@ class User:
 	def hash_password(self, password):
 		self.salt = os.urandom(16)
 		hash = hashlib.sha256()
-		hash.update(bytes(password))
-		hash.update(salt)
+		hash.update(bytes(password, "utf-8"))
+		hash.update(self.salt)
 		self.password_hash = hash.hexdigest()
 
 	def verify_password(self, password):
 		hash = hashlib.sha256()
-		hash.update(bytes(password))
+		hash.update(bytes(password, "utf-8"))
 		hash.update(self.salt)
 		if(self.password_hash == hash.hexdigest()):
 			return True
