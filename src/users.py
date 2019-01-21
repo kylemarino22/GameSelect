@@ -8,10 +8,9 @@ import utilities as util
 
 class User:
 
-	def __init__(self, name, id, variance):
+	def __init__(self, name, variance):
 
 		self.name = name
-		self.id = id
 		self.variance = variance
 		self.gamesOwned = []
 		self.stack = []
@@ -24,7 +23,6 @@ class User:
 			gamesOwnedDict.append(game.dict(db))
 
 		return {'User': self.name,
-				'id': self.id,
 				'variance': self.variance,
 				'gamesOwned': gamesOwnedDict,
 				'gameStack' : self.stack}
@@ -77,7 +75,7 @@ class User:
 
 	def __repr__(self):
 
-		s = "User: " + self.name + "\nid: " + str(self.id) + "\nvariance: " + str(self.variance) + "\npreferences: "
+		s = "User: " + self.name + "\nvariance: " + str(self.variance) + "\npreferences: "
 		for p in self.preferences:
 			s += str(p)
 		return s
