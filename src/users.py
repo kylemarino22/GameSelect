@@ -5,17 +5,18 @@ from xml.dom.minidom import parse, parseString
 import string
 import pymongo
 import time
+import hashlib
+import os
 import src.utilities as util
 
 from itsdangerous import (TimedJSONWebSignatureSerializer
-                          as Serializer, BadSignature, SignatureExpired)
+						  as Serializer, BadSignature, SignatureExpired)
 
 class User:
 
-	def __init__(self, name, variance):
+	def __init__(self, name):
 
 		self.name = name
-		self.variance = variance
 		self.gamesOwned = []
 		self.stack = []
 
@@ -27,7 +28,8 @@ class User:
 			gamesOwnedDict.append(game.dict(globals.mydb))
 
 		return {'User': self.name,
-				'variance': self.variance,
+				'password_hash' : self.password_hash,
+				'password_salt' : self.salt,
 				'gamesOwned': gamesOwnedDict,
 				'gameStack' : self.stack}
 
@@ -79,7 +81,7 @@ class User:
 
 	def __repr__(self):
 
-		s = "User: " + self.name + "\nvariance: " + str(self.variance) + "\npreferences: "
+		s = "User: " + self.name + "\npreferences: "
 		for p in self.preferences:
 			s += str(p)
 		return s
@@ -88,17 +90,35 @@ class User:
 		s = Serializer(app.config['SECRET_KEY'], expires_in = expiration)
 		return s.dumps({ 'id': self.id })
 
-	 @staticmethod
-    def verify_auth_token(token):
-        s = Serializer(app.config['SECRET_KEY'])
-        try:
-            data = s.loads(token)
-        except SignatureExpired:
-            return None # valid token, but expired
-        except BadSignature:
-            return None # invalid token
-        user = User.query.get(data['id'])
-        return user
+	@staticmethod
+	def verify_auth_token(token):
+		s = Serializer(app.config['SECRET_KEY'])
+		try:
+			data = s.loads(token)
+		except SignatureExpired:
+			return None # valid token, but expired
+		except BadSignature:
+			return None # invalid token
+		user = mydb.Users.find_one(data['id'])
+		return user
+
+	def hash_password(self, password):
+		self.salt = os.urandom(16)
+		hash = hashlib.sha256()
+		hash.update(bytes(password))
+		hash.update(salt)
+		self.password_hash = hash.hexdigest()
+
+	def verify_password(self, password):
+		hash = hashlib.sha256()
+		hash.update(bytes(password))
+		hash.update(self.salt)
+		if(self.password_hash == hash.hexdigest()):
+			return True
+		return False
+
+
+
 
 
 def checkForGame(gameID):

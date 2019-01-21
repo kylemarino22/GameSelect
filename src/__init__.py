@@ -18,12 +18,14 @@ app.register_blueprint(Routing)
 
 
 if __name__== "__main__":
-	app.run()
+
 
 	globals.mydb = pymongo.MongoClient("mongodb://localhost:27017/")["GameSelect"]
 
+	app.run()
+
+
 	Users = mydb.Users
-	print("hello", file=sys.stdout)
 
 
 	while(1):
