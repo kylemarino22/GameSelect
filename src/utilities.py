@@ -1,4 +1,4 @@
-import src.globals
+from src.globals import mydb
 import numpy as np
 from requests import get
 from xml.dom.minidom import parse, parseString

@@ -1,7 +1,7 @@
-import src.globals
+import src.globals as globals
 
-from flask import Flask,Blueprint,request
-import src
+from flask import Flask,Blueprint,request, jsonify, abort
+import src.users as users
 import os
 Routing = Blueprint('Routing', __name__)
 
@@ -28,7 +28,7 @@ def new_user():
 		abort(400) # existing user
 
 
-	user = User(username)
+	user = users.User(username)
 	user.hash_password(password)
 
 	globals.mydb.Users.insert(user.dict())

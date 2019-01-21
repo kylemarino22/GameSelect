@@ -1,1 +1,1 @@
-global mydb
+mydb = None

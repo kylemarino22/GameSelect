@@ -1,4 +1,4 @@
-import src.globals
+import src.globals as globals
 import src.config
 
 import numpy as np
