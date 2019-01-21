@@ -1,4 +1,4 @@
-import settings
+import src.globals
 import numpy as np
 from requests import get
 from xml.dom.minidom import parse, parseString
@@ -40,7 +40,7 @@ def getStats (xml, name):
 			'id':int(id)}
 
 def idToName(gameID):
-	nameObj = settings.mydb.Games.find_one({'id':gameID}, {'name':1})
+	nameObj = globals.mydb.Games.find_one({'id':gameID}, {'name':1})
 
 	return nameObj['name']
 
