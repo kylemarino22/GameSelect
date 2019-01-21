@@ -12,7 +12,7 @@ def Handler(command):
 		u = User(username, 1, 0.5)
 		if bgg != "none":
 			u.scrapePreferences(bgg)
-		globals.mydb.Users.insert(u.dict(globals.mydb))
+		globals.mydb.Users.insert(u.dict())
 		print("added user")
 
 	elif(command == "deleteUser"):
