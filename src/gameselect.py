@@ -86,8 +86,9 @@ class GameSelector:
 			stack_index = stack_index_Obj.next()['matchedIndex']
 
 			if(stack_index == -1):
-				empty_stack_counter += 1
-			stack_score += self.calcStackScore(stack_index)
+				stack_score += 1
+			else:
+				stack_score += self.calcStackScore(stack_index)
 
 
 
@@ -100,7 +101,7 @@ class GameSelector:
 			averageRating = 0.5
 
 		try:
-			stack_score = stack_score/(len(self.Users) - empty_stack_counter)
+			stack_score = stack_score/(len(self.Users))
 		except ZeroDivisionError:
 			print("All stacks are empty")
 			stack_score = 1
@@ -136,17 +137,39 @@ class GameSelector:
 		pos = 0;
 		for availableGame in self.availableGames:
 
-			t = {}
-			t['name'] = util.idToName(availableGame,self.db)
-			t['id'] = availableGame
-			t['score'] = self.genGameScore(availableGame)
-			if(t['score'] > maxScore):
-				maxScore = t['score']
+			t = {'e':{}}
+			t['e']['name'] = util.idToName(availableGame,self.db)
+			t['e']['id'] = availableGame
+			t['w'] = self.genGameScore(availableGame)
+			if(t['w'] > maxScore):
+				maxScore = t['w']
 				pos = len(gameScores)
 
-			gameScores.append(t)
+			if(t['w'] > 0):
+				gameScores.append(t)
 
-		print(sorted(gameScores, key = lambda i: i['score']))
+
+		#Sort and Validate Scores
+		sortedScores = sorted(gameScores, key = lambda i: i['w'])
+		print(sortedScores)
+		print("=======================================\n")
+		validScores = sortedScores[-int((len(sortedScores)/4)):]
+		print(validScores)
+
+		#valid scores should be mapped to a range from 0-1 before WeightedList
+		weightList = [elem['w'] for elem in validScores]
+		minWeight = min(weightList)
+		maxWeight = max(weightList)
+
+		for elem in validScores:
+			elem['w'] = util.mapRange(elem['w'], minWeight, maxWeight, 1,2)
+
+		#Weight the scores based on probability
+		wl = util.WeightedList(validScores)
+
+		print(wl.list)
 		print("\n=====================================\n")
 		print("Recommended Game:\n")
-		print(gameScores[pos])
+		print(wl.random())
+
+		return gameScores[pos]
