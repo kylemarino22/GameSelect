@@ -1,1 +1,2 @@
 mydb = None
+app = None

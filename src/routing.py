@@ -1,10 +1,14 @@
 import src.globals as globals
 
-from flask import Flask,Blueprint,request, jsonify, abort
+from flask import Flask,Blueprint,request, jsonify, abort, g
+from flask_httpauth import HTTPBasicAuth
 import src.users as users
 import os
-Routing = Blueprint('Routing', __name__)
+import logging
 
+
+Routing = Blueprint('Routing', __name__)
+auth = HTTPBasicAuth()
 # @Routing.route("/test/")
 # def test():
 #     return "response"
@@ -35,13 +39,36 @@ def new_user():
 
 	return jsonify({ 'username': user.username }), 201
 
+@Routing.route('/api/token', methods=['POST'])
+@auth.login_required
+def get_auth_token():
+	token = g.user.generate_auth_token()
+	return jsonify({ 'token': token.decode('ascii') })
+
+
+
+@Routing.route('/api/resource', methods=['POST'])
+@auth.login_required
+def get_resource():
+	# print(g.user)
+	globals.app.logger.info(g.user)
+	return jsonify({ 'data': str(g.user)})
+
 #=================================================#
-# @auth.verify_password
-# def verify_password(username, password):
-#     user = User.query.filter_by(username = username).first()
-#     if not user or not user.verify_password(password):
-#         return False
-#     g.user = user
-#     return True
+@auth.verify_password
+def verify_password(u, p):
+
+	username_or_token = request.json.get('username')
+	password = request.json.get('password')
+	# first try to authenticate by token
+	user = None
+	user = users.User.verify_auth_token(username_or_token)
+	if not user:
+		# try to authenticate with username/password
+		user = users.User(globals.mydb.Users.find_one({'User':username_or_token}))
+		if not user or not user.verify_password(password):
+			return False
+	g.user = user
+	return True
 
 #=================================================#
