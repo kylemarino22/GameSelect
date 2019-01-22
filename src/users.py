@@ -1,4 +1,4 @@
-import src.globals
+import src.globals as globals
 import numpy as np
 from requests import get
 from xml.dom.minidom import parse, parseString
@@ -8,17 +8,30 @@ import time
 import hashlib
 import os
 import src.utilities as util
+import src.config
+from flask import Flask
+
 
 from itsdangerous import (TimedJSONWebSignatureSerializer
 						  as Serializer, BadSignature, SignatureExpired)
 
 class User:
 
-	def __init__(self, name):
+	def __init__(self, user=None):
 
-		self.username = name
-		self.gamesOwned = []
-		self.stack = []
+		#Default constructor
+		if type(user) is str:
+			self.username = user
+			self.gamesOwned = []
+			self.stack = []
+
+		#Converting mongo dict result to object
+		elif type(user) is dict:
+			self.username = user['User']
+			self.gamesOwned = user['gamesOwned']
+			self.stack = user['gameStack']
+			self.password_hash = user['password_hash']
+			self.password_salt = user['password_salt']
 
 	def dict(self):
 
@@ -29,7 +42,7 @@ class User:
 
 		return {'User': self.username,
 				'password_hash' : self.password_hash,
-				'password_salt' : self.salt,
+				'password_salt' : self.password_salt,
 				'gamesOwned': gamesOwnedDict,
 				'gameStack' : self.stack}
 
@@ -81,38 +94,38 @@ class User:
 
 	def __repr__(self):
 
-		s = "User: " + self.username + "\npreferences: "
-		for p in self.preferences:
-			s += str(p)
+		s = "User: " + self.username + "\nPassword: " + self.password_hash
 		return s
 
 	def generate_auth_token(self, expiration = 600):
-		s = Serializer(app.config['SECRET_KEY'], expires_in = expiration)
-		return s.dumps({ 'id': self.id })
+		s = Serializer(globals.app.config['SECRET_KEY'], expires_in = expiration)
+		return s.dumps({ 'username': self.username })
 
 	@staticmethod
 	def verify_auth_token(token):
-		s = Serializer(app.config['SECRET_KEY'])
+		s = Serializer(globals.app.config['SECRET_KEY'])
 		try:
 			data = s.loads(token)
 		except SignatureExpired:
 			return None # valid token, but expired
 		except BadSignature:
 			return None # invalid token
-		user = mydb.Users.find_one(data['id'])
+
+		user = User(globals.mydb.Users.find_one({'User':data['username']}))
+
 		return user
 
 	def hash_password(self, password):
-		self.salt = os.urandom(16)
+		self.password_salt = os.urandom(16)
 		hash = hashlib.sha256()
 		hash.update(bytes(password, "utf-8"))
-		hash.update(self.salt)
+		hash.update(self.password_salt)
 		self.password_hash = hash.hexdigest()
 
 	def verify_password(self, password):
 		hash = hashlib.sha256()
 		hash.update(bytes(password, "utf-8"))
-		hash.update(self.salt)
+		hash.update(self.password_salt)
 		if(self.password_hash == hash.hexdigest()):
 			return True
 		return False
@@ -167,7 +180,7 @@ def calcPlayerRating(Best, Recommended, notRec):
 # 					{'$set':{'gamesOwned.$.userRating': rating}})
 
 def updateRating(name, rating, user):
-	for index, gam in enumerate( globals.mydb.Users.find_one({'User':user})['gamesOwned']   ):
+	for index, gam in enumerate( globals.mydb.Users.find_one({'User':user})['gamesOwned']):
 		if globals.mydb.Games.find_one({'id':gam['id'] } )['name'] == name:
 			globals.mydb.Users.update_one({'User':user},{'$set':{'gamesOwned.{}.userRating'.format(index):rating}})
 			return

@@ -12,9 +12,9 @@ import src
 from src.routing import Routing
 
 
-app = Flask(__name__)
-app.config.from_pyfile('config.py')
-app.register_blueprint(Routing)
+globals.app = Flask(__name__)
+globals.app.config.from_pyfile('config.py')
+globals.app.register_blueprint(Routing)
 
 
 if __name__== "__main__":
@@ -22,10 +22,10 @@ if __name__== "__main__":
 
 	globals.mydb = pymongo.MongoClient("mongodb://localhost:27017/")["GameSelect"]
 
-	app.run()
+	globals.app.run()
 
 
-	Users = mydb.Users
+	# Users = mydb.Users
 
 
 	while(1):
