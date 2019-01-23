@@ -3,3 +3,4 @@ Pipfile.lock
 __pycache__
 .DS_Store
 GameSelect.egg-info/
+log.txt
