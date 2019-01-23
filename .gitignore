@@ -3,7 +3,4 @@ Pipfile.lock
 __pycache__
 .DS_Store
 GameSelect.egg-info/
-<<<<<<< HEAD
 log.txt
-=======
->>>>>>> adding egg-info
