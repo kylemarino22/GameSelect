@@ -10,7 +10,6 @@ setup(
         'numpy',
 	'itsdangerous',
 	'pymongo',
-	'hashlib',
 	'flask_httpauth',
 
     ],
