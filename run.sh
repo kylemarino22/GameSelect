@@ -7,4 +7,4 @@ else
 fi
 export FLASK_ENV=development
 export FLASK_APP=src/__init__.py
-flask run
+python3 src/main.py
