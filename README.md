@@ -1,3 +1,7 @@
 # GameSelect
 An app for choosing board games.
-Requires requests library to run.
+Run
+```
+$ ./run
+```
+to setup. Setup logs are saved in log.txt.
