@@ -1,12 +1,9 @@
-import src.globals
-import numpy as np
-from requests import get
-from xml.dom.minidom import parse, parseString
 import string
 import pymongo
 import time
 import src.utilities as util
 from math import e
+from src.main import db
 
 PLAYERCOUNT_CONST = 1
 STACK_CONST = 3
@@ -25,7 +22,7 @@ class GameSelector:
 		availableGames = []
 		for User in self.Users:
 			print(User)
-			userGamesCursor = globals.mydb.Users.find({'User': User}, {"gamesOwned.id":1})
+			userGamesCursor = db.Users.find({'User': User}, {"gamesOwned.id":1})
 
 			for obj in userGamesCursor:
 				gamesObjList = obj['gamesOwned']
@@ -42,7 +39,7 @@ class GameSelector:
 		# print(availableGames)
 
 	def genGameScore(self, gameID):
-		obj = globals.mydb.Games.find({'id':gameID})[0]
+		obj = db.Games.find({'id':gameID})[0]
 
 		maxplaytime = obj["maxplaytime"]
 		if(maxplaytime > self.maxTime):
@@ -64,7 +61,7 @@ class GameSelector:
 		NA_counter = 0
 		empty_stack_counter = 0
 		for userName in self.Users:
-			userRatingObj = globals.mydb.Users.find_one({'User': userName,'gamesOwned.id': gameID},
+			userRatingObj = db.Users.find_one({'User': userName,'gamesOwned.id': gameID},
 														{'gamesOwned.$.userRating': 1});
 
 			if(userRatingObj == None):
@@ -79,7 +76,7 @@ class GameSelector:
 			else:
 				averageRating += rating
 
-			stack_index_Obj = globals.mydb.Users.aggregate([
+			stack_index_Obj = db.Users.aggregate([
 													{ '$match': { 'User': userName } },
 													{ '$project': { 'matchedIndex': { '$indexOfArray': [ '$gameStack', gameID ] } } }
 													] )

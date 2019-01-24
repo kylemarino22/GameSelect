@@ -12,7 +12,7 @@ def Handler(command):
 		u = User(username, 1, 0.5)
 		if bgg != "none":
 			u.scrapePreferences(bgg)
-		globals.mydb.Users.insert(u.dict())
+		db.Users.insert(u.dict())
 		print("added user")
 
 	elif(command == "deleteUser"):
@@ -28,12 +28,12 @@ def Handler(command):
 
 	elif (command == "addGametoUser"):
 		nm = input("Username:\n")
-		user = globals.mydb.Users.find_one({'User':nm})
+		user = db.Users.find_one({'User':nm})
 		if user==None:
 			return
 		else:
 			gm = input("Game:\n")
-			game = globals.mydb.Games.find_one({'name':gm})
+			game = db.Games.find_one({'name':gm})
 			if game == None:
 				print("does not exist")
 				return

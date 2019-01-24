@@ -6,5 +6,5 @@ else
     pip install -e . &>log.txt
 fi
 export FLASK_ENV=development
-export FLASK_APP=src/__init__.py
+export FLASK_APP=src/main.py
 flask run

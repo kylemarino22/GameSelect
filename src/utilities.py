@@ -1,10 +1,10 @@
-from src.globals import mydb
 import numpy as np
 from requests import get
 from xml.dom.minidom import parse, parseString
 import string
 import pymongo
 import random
+from src.main import db
 
 def xmlTag(xml, tag):
 	return xml.getElementsByTagName(tag)[0].firstChild.nodeValue
@@ -40,7 +40,7 @@ def getStats (xml, name):
 			'id':int(id)}
 
 def idToName(gameID):
-	nameObj = globals.mydb.Games.find_one({'id':gameID}, {'name':1})
+	nameObj = db.Games.find_one({'id':gameID}, {'name':1})
 
 	return nameObj['name']
 
