@@ -1,6 +1,6 @@
-import settings
+import src.globals
 
-from users import *
+import src.users
 import utilities as utilities
 
 def Handler(command):
@@ -12,7 +12,7 @@ def Handler(command):
 		u = User(username, 1, 0.5)
 		if bgg != "none":
 			u.scrapePreferences(bgg)
-		settings.mydb.Users.insert(u.dict(settings.mydb))
+		globals.mydb.Users.insert(u.dict())
 		print("added user")
 
 	elif(command == "deleteUser"):
@@ -28,12 +28,12 @@ def Handler(command):
 
 	elif (command == "addGametoUser"):
 		nm = input("Username:\n")
-		user = settings.mydb.Users.find_one({'User':nm})
+		user = globals.mydb.Users.find_one({'User':nm})
 		if user==None:
 			return
 		else:
 			gm = input("Game:\n")
-			game = settings.mydb.Games.find_one({'name':gm})
+			game = globals.mydb.Games.find_one({'name':gm})
 			if game == None:
 				print("does not exist")
 				return

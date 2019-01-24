@@ -8,9 +8,10 @@ setup(
         'flask',
         'requests',
         'numpy',
-	'itsdangerous',
-	'pymongo',
-	'flask_httpauth',
+        'itsdangerous',
+        'pymongo',
+        'hashlib',
+        'flask_httpauth',
 
     ],
 )

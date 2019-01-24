@@ -1,25 +1,32 @@
-import settings
-
+import src.globals as globals
+import src.config
 
 import numpy as np
 from requests import get
 from xml.dom.minidom import parse, parseString
 import string
 import pymongo
+from flask import Flask
 
-import users
-import utilities
-import commands
-import gameselect
+import src
+from src.routing import Routing
 
 
+globals.app = Flask(__name__)
+globals.app.config.from_pyfile('config.py')
+globals.app.register_blueprint(Routing)
 
 
 if __name__== "__main__":
 
-	settings.mydb = pymongo.MongoClient("mongodb://localhost:27017/")["GameSelect"]
 
-	Users = settings.mydb.Users
+	globals.mydb = pymongo.MongoClient("mongodb://localhost:27017/")["GameSelect"]
+
+	globals.app.run()
+
+
+	# Users = mydb.Users
+
 
 	while(1):
 		inputCommand = input("Enter a Command:\n")

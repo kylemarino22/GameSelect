@@ -1,30 +1,48 @@
-import settings
+import src.globals as globals
 import numpy as np
 from requests import get
 from xml.dom.minidom import parse, parseString
 import string
 import pymongo
 import time
-import utilities as util
+import hashlib
+import os
+import src.utilities as util
+import src.config
+from flask import Flask
+
+
+from itsdangerous import (TimedJSONWebSignatureSerializer
+						  as Serializer, BadSignature, SignatureExpired)
 
 class User:
 
-	def __init__(self, name, variance):
+	def __init__(self, user=None):
 
-		self.name = name
-		self.variance = variance
-		self.gamesOwned = []
-		self.stack = []
+		#Default constructor
+		if type(user) is str:
+			self.username = user
+			self.gamesOwned = []
+			self.stack = []
+
+		#Converting mongo dict result to object
+		elif type(user) is dict:
+			self.username = user['User']
+			self.gamesOwned = user['gamesOwned']
+			self.stack = user['gameStack']
+			self.password_hash = user['password_hash']
+			self.password_salt = user['password_salt']
 
 	def dict(self):
 
 		gamesOwnedDict = []
 
 		for game in self.gamesOwned:
-			gamesOwnedDict.append(game.dict(settings.mydb))
+			gamesOwnedDict.append(game.dict(globals.mydb))
 
-		return {'User': self.name,
-				'variance': self.variance,
+		return {'User': self.username,
+				'password_hash' : self.password_hash,
+				'password_salt' : self.password_salt,
 				'gamesOwned': gamesOwnedDict,
 				'gameStack' : self.stack}
 
@@ -76,35 +94,70 @@ class User:
 
 	def __repr__(self):
 
-		s = "User: " + self.name + "\nvariance: " + str(self.variance) + "\npreferences: "
-		for p in self.preferences:
-			s += str(p)
+		s = "User: " + self.username + "\nPassword: " + self.password_hash
 		return s
 
+	def generate_auth_token(self, expiration = 600):
+		s = Serializer(globals.app.config['SECRET_KEY'], expires_in = expiration)
+		return s.dumps({ 'username': self.username })
+
+	@staticmethod
+	def verify_auth_token(token):
+		s = Serializer(globals.app.config['SECRET_KEY'])
+		try:
+			data = s.loads(token)
+		except SignatureExpired:
+			return None # valid token, but expired
+		except BadSignature:
+			return None # invalid token
+
+		user = User(globals.mydb.Users.find_one({'User':data['username']}))
+
+		return user
+
+	def hash_password(self, password):
+		self.password_salt = os.urandom(16)
+		hash = hashlib.sha256()
+		hash.update(bytes(password, "utf-8"))
+		hash.update(self.password_salt)
+		self.password_hash = hash.hexdigest()
+
+	def verify_password(self, password):
+		hash = hashlib.sha256()
+		hash.update(bytes(password, "utf-8"))
+		hash.update(self.password_salt)
+		if(self.password_hash == hash.hexdigest()):
+			return True
+		return False
+
+
+
+
+
 def checkForGame(gameID):
-	Games = settings.mydb.Games
+	Games = globals.mydb.Games
 	if Games.find_one({"id": int(gameID)}) is None:
 		return 1
 
 def addGame(gameDict):
-	Games = settings.mydb.Games
+	Games = globals.mydb.Games
 	Games.insert(gameDict)
 
 def deleteUser(user):
-	settings.mydb.Users.delete_one({'User': user})
+	globals.mydb.Users.delete_one({'User': user})
 
 def deleteGame(game, user):
-	settings.mydb.Users.update({'User': user},
+	globals.mydb.Users.update({'User': user},
 					{'$pull':{'gamesOwned':{'Game': game}}})
 
 def updateStack(game, user):
 	id= util.nameToID(game)
 
-	settings.mydb.Users.update({'User':user},
+	globals.mydb.Users.update({'User':user},
 					{'$push': {'gameStack': {'$each': [id], '$position': 0}}})
 
 	# Store the last 30 board games played
-	settings.mydb.Users.update({'User':user},
+	globals.mydb.Users.update({'User':user},
 					{'$unset': {"gameStack.31": 1}})
 
 
@@ -123,18 +176,18 @@ def calcPlayerRating(Best, Recommended, notRec):
 
 
 # def updateRating(game, rating, user):
-# 	settings.mydb.Users.update({'User': user,'gamesOwned.Game': game},
+# 	globals.mydb.Users.update({'User': user,'gamesOwned.Game': game},
 # 					{'$set':{'gamesOwned.$.userRating': rating}})
 
 def updateRating(name, rating, user):
-	for index, gam in enumerate( settings.mydb.Users.find_one({'User':user})['gamesOwned']   ):
-		if settings.mydb.Games.find_one({'id':gam['id'] } )['name'] == name:
-			settings.mydb.Users.update_one({'User':user},{'$set':{'gamesOwned.{}.userRating'.format(index):rating}})
+	for index, gam in enumerate( globals.mydb.Users.find_one({'User':user})['gamesOwned']):
+		if globals.mydb.Games.find_one({'id':gam['id'] } )['name'] == name:
+			globals.mydb.Users.update_one({'User':user},{'$set':{'gamesOwned.{}.userRating'.format(index):rating}})
 			return
-	pref = Preference(settings.mydb.Games.find_one({'name':name})['id'],rating )
-	settings.mydb.Users.update_one({'User':user},{'$push':{'gamesOwned':pref.dict(settings.mydb)}})
+	pref = Preference(globals.mydb.Games.find_one({'name':name})['id'],rating )
+	globals.mydb.Users.update_one({'User':user},{'$push':{'gamesOwned':pref.dict(globals.mydb)}})
 # def updateStack(db, user):
-# 	settings.mydb.Users.update({'User': user, 'gameStack'
+# 	globals.mydb.Users.update({'User': user, 'gameStack'
 
 def addToStack(stack, name):
 	stack.insert(0, name)
