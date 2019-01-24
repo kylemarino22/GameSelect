@@ -8,4 +8,5 @@ app.config.from_pyfile('config.py')
 
 db = pymongo.MongoClient("mongodb://localhost:27017/")["GameSelect"]
 
-import src.routing
+#api endpoints
+import src.login

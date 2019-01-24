@@ -1,4 +1,3 @@
-from requests import get
 from xml.dom.minidom import parse, parseString
 import string
 import pymongo
@@ -8,8 +7,6 @@ import os
 import src.utilities as util
 from flask import Flask
 from src.main import app, db
-
-
 from itsdangerous import (TimedJSONWebSignatureSerializer
 						  as Serializer, BadSignature, SignatureExpired)
 
@@ -151,11 +148,11 @@ def deleteGame(game, user):
 def updateStack(game, user):
 	id= util.nameToID(game)
 
-	db.Users.update({'User':user},
+	db.Users.update({'User': user},
 					{'$push': {'gameStack': {'$each': [id], '$position': 0}}})
 
 	# Store the last 30 board games played
-	db.Users.update({'User':user},
+	db.Users.update({'User': user},
 					{'$unset': {"gameStack.31": 1}})
 
 

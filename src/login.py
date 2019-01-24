@@ -33,14 +33,6 @@ def get_auth_token():
 	return jsonify({ 'token': token.decode('ascii') })
 
 
-
-@app.route('/api/resource', methods=['POST'])
-@auth.login_required
-def get_resource():
-	# print(g.user)
-	app.logger.info(g.user)
-	return jsonify({ 'data': str(g.user)})
-
 #=================================================#
 @auth.verify_password
 def verify_password(u, p):
