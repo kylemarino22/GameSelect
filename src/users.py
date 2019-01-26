@@ -6,9 +6,9 @@ import hashlib
 import os
 import src.utilities as util
 from flask import Flask
-from src.main import app, db
 from itsdangerous import (TimedJSONWebSignatureSerializer
 						  as Serializer, BadSignature, SignatureExpired)
+from .main import app, db
 
 class User:
 

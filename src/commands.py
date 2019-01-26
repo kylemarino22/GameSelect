@@ -1,6 +1,4 @@
-import src.globals
-
-import src.users
+import .users
 import utilities as utilities
 
 def Handler(command):

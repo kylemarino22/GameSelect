@@ -3,7 +3,7 @@ import pymongo
 import time
 import src.utilities as util
 from math import e
-from src.main import db
+from .main import db
 
 PLAYERCOUNT_CONST = 1
 STACK_CONST = 3

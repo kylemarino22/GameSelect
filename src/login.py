@@ -1,9 +1,10 @@
-from flask import Flask,Blueprint,request, jsonify, abort, g
+from flask import Flask,request, jsonify, abort, g
 from flask_httpauth import HTTPBasicAuth
-import src.users as users
+
 import os
 import logging
-from src.main import app
+import src.users as users
+from .main import app, db
 
 auth = HTTPBasicAuth()
 

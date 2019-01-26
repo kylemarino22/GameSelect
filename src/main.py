@@ -10,3 +10,4 @@ db = pymongo.MongoClient("mongodb://localhost:27017/")["GameSelect"]
 
 #api endpoints
 import src.login
+import src.lobby

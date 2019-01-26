@@ -4,7 +4,7 @@ from xml.dom.minidom import parse, parseString
 import string
 import pymongo
 import random
-from src.main import db
+from .main import db
 
 def xmlTag(xml, tag):
 	return xml.getElementsByTagName(tag)[0].firstChild.nodeValue
