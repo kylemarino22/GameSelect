@@ -21,7 +21,7 @@ class User:
 		gamesOwnedDict = []
 
 		for game in self.gamesOwned:
-			gamesOwnedDict.append(game.dict(settings.mydb))
+			gamesOwnedDict.append(game.dict())
 
 		return {'User': self.name,
 				'variance': self.variance,
