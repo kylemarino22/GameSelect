@@ -5,6 +5,7 @@ from flask_httpauth import HTTPBasicAuth
 
 import os
 import logging
+import sys
 import src.users as users
 import src.login
 from .main import app, db
@@ -30,13 +31,17 @@ def createLobby():
 @app.route('/api/joinLobby', methods=['POST'])
 @auth.login_required
 def joinLobby():
+
+	#user which has created the lobby
 	f_username = request.json.get('f_username')
 
 	#Game Request came from person that was confirmed
-	if f_username == db.Users.find_one({'User':g.user.username})['gameRequest']:
-		db.Users.update({'User': f_username},
-						{'$push': g.user.username})
 
+	if f_username == db.Users.find_one({'User':g.user.username})['gameRequest']:
+		print("a", file = sys.stderr)
+		db.Users.update({'User': f_username},
+						{'$push': {'lobby':g.user.username}})
+		return jsonify({"status": "ok"})
 
 @auth.verify_password
 def verify_password(u, p):
