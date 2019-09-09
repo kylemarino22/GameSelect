@@ -11,6 +11,7 @@ auth = HTTPBasicAuth()
 
 @app.route('/api/users', methods = ['POST'])
 def new_user():
+	print (request.json)
 	username = request.json.get('username')
 	password = request.json.get('password')
 	if username is None or password is None:
@@ -25,7 +26,7 @@ def new_user():
 
 	db.Users.insert(user.dict())
 
-	return jsonify({ 'username': user.username }), 201
+	return jsonify({ 'username': user.username }), 200
 
 @app.route('/api/token', methods=['POST'])
 @auth.login_required
